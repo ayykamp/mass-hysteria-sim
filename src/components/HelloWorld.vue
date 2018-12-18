@@ -1,147 +1,159 @@
 <template>
-  <v-container>
-    <v-layout
-      text-xs-center
-      wrap
-    >
-      <v-flex xs12>
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        ></v-img>
+  <v-container fluid grid-list-xl>
+    <v-layout wrap align-center>
+      <v-flex lg6 sm12 xs12>
+        <h1>Your Board</h1>
+        <v-chip v-for="minion in myMinions" :key="minion.$" close @input="delMinion(minion.$, 'm')">
+          {{ `${minion.a}/${minion.h}`}}
+        </v-chip>
+        <v-form>
+          <v-text-field
+            v-model="currentMy.a"
+            label="Attack"
+            type="number"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="currentMy.h"
+            label="Health"
+            type="number"
+            required
+          ></v-text-field>
+          <v-btn color="primary" @click="addMinion('m')">
+            Add Minion
+          </v-btn>
+        </v-form>
       </v-flex>
-
-      <v-flex mb-4>
-        <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
-        </h1>
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a href="https://community.vuetifyjs.com" target="_blank">Discord Community</a>
-        </p>
+      <v-flex lg6 sm12 xs12>
+        <h1>Enemy Board</h1>
+        <v-chip v-for="minion in enemyMinions" :key="minion.$" close @input="delMinion(minion.$, 'e')">
+          {{ `${minion.a}/${minion.h}`}}
+        </v-chip>
+        <v-form>
+          <v-text-field
+            v-model="currentEnemy.a"
+            label="Attack"
+            type="number"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="currentEnemy.h"
+            label="Health"
+            type="number"
+            required
+          ></v-text-field>
+          <v-btn color="primary" @click="addMinion('e')">
+            Add Minion
+          </v-btn>
+        </v-form>
       </v-flex>
-
-      <v-flex
-        mb-5
-        xs12
+      <v-layout column>
+        <v-btn color="error" @click="simulate">ＳＩＭＵＬＡＴＥ</v-btn>
+      </v-layout >
+      <v-snackbar
+        v-model="snackbar"
+        color="error"
+        :timeout="600000"
       >
-        <h2 class="headline font-weight-bold mb-3">What's next?</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-
-      <v-flex
-        xs12
-        mb-5
-      >
-        <h2 class="headline font-weight-bold mb-3">Important Links</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-
-      <v-flex
-        xs12
-        mb-5
-      >
-        <h2 class="headline font-weight-bold mb-3">Ecosystem</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-layout>
-      </v-flex>
+        {{ snackText }}
+        <v-btn dark flat @click="snackbar = false">
+          CLOSE
+        </v-btn>
+      </v-snackbar>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+  import shortid from 'shortid'
+  
   export default {
     data: () => ({
-      ecosystem: [
-        {
-          text: 'vuetify-loader',
-          href: 'https://github.com/vuetifyjs/vuetify-loader'
-        },
-        {
-          text: 'github',
-          href: 'https://github.com/vuetifyjs/vuetify'
-        },
-        {
-          text: 'awesome-vuetify',
-          href: 'https://github.com/vuetifyjs/awesome-vuetify'
+      currentMy: {
+        a: null,
+        h: null,
+        $: shortid.generate()
+      },
+      myMinions: [],
+      currentEnemy: {
+        a: null,
+        h: null,
+        $: shortid.generate()
+      },
+      enemyMinions: [],
+      snackbar: false,
+      snackText: null
+    }),
+    methods: {
+      addMinion (t) {
+        let type =  t === 'e' ? 'enemy': 'my'
+        let current = ['current' + type[0].toUpperCase() + type.slice(1)]
+        if (!this.validateInput(current)) return
+        this[type + 'Minions'].push(this[current])
+        this[current] = {
+          a: null,
+          h: null,
+          $: shortid.generate()
         }
-      ],
-      importantLinks: [
-        {
-          text: 'Documentation',
-          href: 'https://vuetifyjs.com'
-        },
-        {
-          text: 'Chat',
-          href: 'https://community.vuetifyjs.com'
-        },
-        {
-          text: 'Made with Vuetify',
-          href: 'https://madewithvuetifyjs.com'
-        },
-        {
-          text: 'Twitter',
-          href: 'https://twitter.com/vuetifyjs'
-        },
-        {
-          text: 'Articles',
-          href: 'https://medium.com/vuetify'
+      },
+      delMinion (id, t) {
+        let type =  t === 'e' ? 'enemy': 'my'
+        this[type + 'Minions'].splice(this[type + 'Minions'].findIndex(e => e.$ === id), 1)
+      },
+      showSnack (text) {
+        if (this.snackbar && text === this.snackText) {
+          this.shakeItBoi('.v-snack__wrapper')
+          return
+        } else if (this.snackbar) {
+          this.snackText = text
+          return
+        } else {
+          this.snackbar = true
+          this.snackText = text
+          return
         }
-      ],
-      whatsNext: [
-        {
-          text: 'Explore components',
-          href: 'https://vuetifyjs.com/components/api-explorer'
-        },
-        {
-          text: 'Select a layout',
-          href: 'https://vuetifyjs.com/layout/pre-defined'
-        },
-        {
-          text: 'Frequently Asked Questions',
-          href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions'
-        }
+      },
+      shakeItBoi (e) {
+      let snackbarDiv = document.querySelector(e);
+        if (!snackbarDiv.classList.contains('animated')) {
+          snackbarDiv.classList.add('animated');
+          setTimeout(function() {
+            snackbarDiv.classList.remove('animated');
 
-      ]
-    })
+          }, 650);
+        }
+      },
+      validateInput (currentString) {
+        const current = this[currentString]
+        if (current.a === null|| current.h === null) {
+          this.showSnack('Please add some stats')
+          return false
+        } else if (!current.a.match(/[⌃0-9]/) || !current.h.match(/[⌃0-9]/)) {
+          this.showSnack('Invalid Input')
+          return false
+        } else if (current.h === 0) {
+          this.showSnack('No 0 HP minions')
+          return true
+        } else {
+          return true
+        }
+      },
+      simulate () {
+        let myMinions = this.myMinions.map(e => [e.a, e.h, 0]).flat()
+        let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1]).flat()
+        
+      }
+    },
+
   }
 </script>
 
 <style>
-
+.animated {
+  -webkit-animation: 650ms shake alternate ease-in-out;
+  -moz-animation: 650ms shake alternate ease-in-out;
+  -ms-animation: 650ms shake alternate ease-in-out;
+  -o-animation: 650ms shake alternate ease-in-out;
+  animation: 650ms shake alternate ease-in-out;
+}
 </style>
