@@ -2,40 +2,53 @@
   <v-app>
     <v-toolbar app>
       <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
+        <span>Mass Hysteria</span>
+        <span class="font-weight-light">Simulator</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
         flat
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
         target="_blank"
       >
-        <span class="mr-2">Latest Release</span>
+        <span class="mr-2">GitHub</span>
       </v-btn>
     </v-toolbar>
 
     <v-content>
-      <HelloWorld/>
+      <Board/>
     </v-content>
+    <!-- <v-footer dark>
+      <v-layout align-center justify-center row fill-height>
+        Made with <img src="https://cdn.frankerfacez.com/emoticon/103171/4" alt="gachiGASM" width="20px" class="gachi">
+      </v-layout>
+    </v-footer> -->
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import Board from './components/Board'
 
 export default {
-  name: 'App',
+  name: 'Mass-Hysteria-Simulator',
   components: {
-    HelloWorld
+    Board
   },
   data () {
     return {
-      //
+      
     }
-  },
-  mounted () {
-    
   }
 }
 </script>
+
+<style>
+.gachi {
+  margin-left: 5px;
+}
+
+.v-footer {
+  margin-top: 50%;
+  background-color: #424242;
+}
+</style>
+

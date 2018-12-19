@@ -48,12 +48,12 @@
         </v-form>
       </v-flex>
       <v-layout column>
-        <v-btn color="error" @click="simulate">ＳＩＭＵＬＡＴＥ</v-btn>
+        <v-btn color="error" @click="simulate" :loading="simLoading">ＳＩＭＵＬＡＴＥ</v-btn>
       </v-layout >
       <v-snackbar
         v-model="snackbar"
         color="error"
-        :timeout="600000"
+        :timeout="6000"
       >
         {{ snackText }}
         <v-btn dark flat @click="snackbar = false">
@@ -66,7 +66,8 @@
 
 <script>
   import shortid from 'shortid'
-  
+  import massHysteriaSim from '../simulate.js'
+
   export default {
     data: () => ({
       currentMy: {
@@ -82,7 +83,8 @@
       },
       enemyMinions: [],
       snackbar: false,
-      snackText: null
+      snackText: null,
+      simLoading: false
     }),
     methods: {
       addMinion (t) {
@@ -139,9 +141,20 @@
         }
       },
       simulate () {
+        if (this.enemyMinions.length === 0 && this.myMinions.length === 0) {
+          return this.showSnack('Please add some minions : )')
+        } else if ((this.enemyMinions.length === 1 && this.myMinions.length === 0) || (this.enemyMinions.length === 0 && this.myMinions.length === 1)){
+          return this.showSnack('Nothing is going to happen : )')
+        }
         let myMinions = this.myMinions.map(e => [e.a, e.h, 0]).flat()
         let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1]).flat()
-        
+        this.simLoading = true
+        try {
+          massHysteriaSim(myMinions.concat(enemyMinions), 10000)
+        } catch (e) {
+          this.showSnack(e)
+        }
+        this.simLoading = false
       }
     },
 

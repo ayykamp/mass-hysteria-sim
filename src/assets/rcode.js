@@ -1,4 +1,4 @@
-const rcode = `# a remake of the sample function that prevents sample(x)=sample(1:x) when length(x)=1
+export default `# a remake of the sample function that prevents sample(x)=sample(1:x) when length(x)=1
 mysample <- function(x){
   if (length(x)>1){
     return(sample(x))
@@ -71,45 +71,4 @@ test.mass.hysteria <- function(stats, trials){
   }
 }
 
-test.mass.hysteria(stats = c(3,4,1, 4,1,1, 6,9,1, 2,1,0), trials = 10000)`
-
-export default arr => {
-  const txt = document.createElement('textarea')
-  txt.id = 'forsen1'
-  txt.innerHTML = rcode
-  txt.style.display = 'none'
-  document.getElementsByTagName('body')[0].appendChild(txt)
-  ocpu.seturl('https://public.opencpu.org/ocpu/library/base/R')
-  $('#submitbutton').on('click', function() {
-    //arguments
-    var mysnippet = new ocpu.Snippet($('#forsen1').val())
-    //disable button
-    $('button').attr('disabled', 'disabled')
-
-    //perform the request
-    var req = ocpu.call(
-      'identity',
-      {
-        x: mysnippet
-      },
-      function(session) {
-        session.getConsole(function(outtxt) {
-          console.clear()
-          console.log(outtxt)
-          let lines = outtxt.split('\n')
-          lines = lines.splice(lines.indexOf('$`Minion stats`'), lines.length - 1)
-          console.log(lines[2].split(' ').filter(_ => _ !== ''))
-        })
-      }
-    )
-
-    //if R returns an error, alert the error message
-    req.fail(function() {
-      alert('Server error: ' + req.responseText)
-    })
-
-    req.always(function() {
-      $('button').removeAttr('disabled')
-    })
-  })
-}
+`
