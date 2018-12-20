@@ -1,7 +1,5 @@
-/* eslint-disable */
-
-function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
+const shuffle = array => {
+  let currentIndex = array.length, temporaryValue, randomIndex;
 
   // While there remain elements to shuffle...
   while (0 !== currentIndex) {
@@ -117,11 +115,10 @@ const testMassHysteria = (stats, trials) => {
       isEnemy.push(statsMat[i][2]);
     }
   
-    const enemies = statsMat.map(x=> x[2]).filter(p => p == 0).length;
     const survival = new Array(n).fill(0);
     // Create 3D array to house the trials
     let simStats = arr3D(0, n, 3, trials);
-    let cleared = new Array(trials).fill(0);
+    let cleared = new Array(trials).fill(1);
     // for each trial
     for (let trial =0; trial < trials; trial++) {
       // do the trial and put it in the array
@@ -139,8 +136,8 @@ const testMassHysteria = (stats, trials) => {
       for (let i = 0; i < simStats.length; i++) {
         survival[i] = survival[i] + (simStats[i][1][trial] > 0 ? 1/trials : 0);
         // see whether or not the trial resulted in a full clear of enemy board
-        if (simStats[i][1][trial] * simStats[i][2][trial] > 0) {
-          cleared[trial] = 1;
+        if (simStats[i][1][trial] * simStats[i][2][trial] > 0.05) {
+          cleared[trial] = 0;
         }
       } 
     }
@@ -162,15 +159,23 @@ const testMassHysteria = (stats, trials) => {
 
     // Printing it out and formatting numbers.
     // Remove the formatting if you want to do calculations on these
-    console.log("attack: ", attack);
-    console.log("healthBefore: ", healthBefore);
-    console.log("healthAfter: ", healthAfter.map(x => Number(x.toFixed(2))));
-    console.log("survival: ", survival.map(x => Number(x.toFixed(2))));
-    console.log("isEnemy: ", isEnemy);
-    console.log("clearChance: ", 100*clearChance.toFixed(4));
-    console.log("remainingDamage: ", remainingDamage.toFixed(2));
+    // console.log("attack: ", attack);
+    // console.log("healthBefore: ", healthBefore);
+    // console.log("healthAfter: ", healthAfter.map(x => Number(x.toFixed(2))));
+    // console.log("survival: ", survival.map(x => Number(x.toFixed(2))));
+    // console.log("isEnemy: ", isEnemy);
+    // console.log("clearChance: ", 100*clearChance.toFixed(4));
+    // console.log("remainingDamage: ", remainingDamage.toFixed(2));
+    return {
+      attack,
+      healthBefore,
+      healthAfter,
+      survival,
+      isEnemy,
+      clearChance,
+      remainingDamage
+    }
   }
 }
 
-export default testMassHysteria
-//testMassHysteria([3,4,1, 4,1,1, 6,9,1, 2,1,0], 10000);
+export default testMassHysteria;
