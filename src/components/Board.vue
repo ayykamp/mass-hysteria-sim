@@ -150,7 +150,8 @@
         let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1]).flat()
         this.simLoading = true
         try {
-          massHysteriaSim(myMinions.concat(enemyMinions), 10000)
+          const result = massHysteriaSim(myMinions.concat(enemyMinions), 10000)
+          console.log(result)
         } catch (e) {
           this.showSnack(e)
         }
