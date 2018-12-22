@@ -9,6 +9,8 @@
       <v-btn
         flat
         target="_blank"
+        href="https://github.com/AyyKamp/mass-hysteria-sim"
+        rel="noreferrer"
       >
         <span class="mr-2">GitHub</span>
       </v-btn>
