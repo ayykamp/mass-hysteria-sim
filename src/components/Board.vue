@@ -2,7 +2,7 @@
   <v-container fluid grid-list-xl>
     <v-layout wrap align-center>
       <v-flex lg6 sm12 xs12>
-        <v-btn class="reset-btn" @click="reset(0)">
+        <v-btn class="reset-btn-friendly" @click="reset(0)">
           Reset
         </v-btn>
         <h1>Your Board</h1>
@@ -24,7 +24,7 @@
         </v-form>
       </v-flex>
       <v-flex lg6 sm12 xs12>
-        <v-btn class="reset-btn" @click="reset(1)">
+        <v-btn class="reset-btn-enemy" @click="reset(1)">
           Reset
         </v-btn>
         <h1>Enemy Board</h1>
@@ -183,7 +183,7 @@ export default {
           return {
             stats: `${e}/${result.healthBefore[i]}`,
             healthAfter: Number(result.healthAfter[i].toFixed(2)),
-            survival: Number(result.survival[i].toFixed(2)),
+            survival: Number(result.survival[i].toFixed(4)) * 100 + '%',
             isEnemy: result.isEnemy[i]
           }
         })
@@ -253,9 +253,14 @@ th {
   margin: 0px;
 }
 
-.flex > button.reset-btn.v-btn.theme--light {
+.reset-btn-friendly {
   float: right;
-  background-color: #FF6666;
+  background-color: rgba(0, 128, 0, .6) !important;
+}
+
+.reset-btn-enemy {
+  float: right;
+  background-color: rgba(128, 0, 0, .6) !important;
 }
 
 form > .v-text-field {
