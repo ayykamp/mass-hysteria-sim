@@ -1,0 +1,10 @@
+{
+  "name": "Mass Hysteria Sim",
+  "alias": "mass-hysteria-sim",
+  "builds": [
+    { "src": "**", "use": "@now/static" }
+  ],
+  "files": [
+    "dist"
+  ]
+}
