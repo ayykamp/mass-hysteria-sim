@@ -2,29 +2,28 @@
   <v-container fluid grid-list-xl>
     <v-layout wrap align-center>
       <v-flex lg6 sm12 xs12>
-        <v-btn class="reset-btn-friendly" @click="reset(0)">
+        <v-btn class="reset-btn-friendly" @click="reset('friendly')">
           Reset
         </v-btn>
         <h1>Your Board</h1>
-        
-        <v-chip v-for="minion in friendlyMinions" :key="minion.$" class="friendly-chip">
+        <v-chip class="friendly-chip" v-for="minion in friendlyMinions" :key="minion.$">
           {{ `${minion.a}/${minion.h}`}}
           <div class="v-chip__close">
             <img
               src="/assets/material_cancel.svg"
               class="v-icon material-icons theme--light close"
-              @click="delMinion(minion.$, 0)"
+              @click="delMinion(minion.$, 'friendly')"
             >
           </div>
         </v-chip>
         <v-form>
-          <v-text-field v-model="currentFriendly.a" label="Attack" type="number" required></v-text-field>
-          <v-text-field v-model="currentFriendly.h" label="Health" type="number" required @keydown.enter="addMinion(0)"></v-text-field>
-          <v-btn color="primary" @click="addMinion(0)">Add Minion</v-btn>
+          <v-text-field v-model="friendlyCurrent.a" label="Attack" type="number" ref="friendlyAtk" required></v-text-field>
+          <v-text-field v-model="friendlyCurrent.h" label="Health" type="number" required @keydown.enter="addMinion('friendly', true)"></v-text-field>
+          <v-btn color="primary" @click="addMinion('friendly')">Add Minion</v-btn>
         </v-form>
       </v-flex>
       <v-flex lg6 sm12 xs12>
-        <v-btn class="reset-btn-enemy" @click="reset(1)">
+        <v-btn class="reset-btn-enemy" @click="reset('enemy')">
           Reset
         </v-btn>
         <h1>Enemy Board</h1>
@@ -34,14 +33,14 @@
             <img
               src="/assets/material_cancel.svg"
               class="v-icon material-icons theme--light close"
-              @click="delMinion(minion.$, 1)"
+              @click="delMinion(minion.$, 'enemy')"
             >
           </div>
         </v-chip>
         <v-form>
-          <v-text-field v-model="currentEnemy.a" label="Attack" type="number" required></v-text-field>
-          <v-text-field v-model="currentEnemy.h" label="Health" type="number" required @keydown.enter="addMinion(1)"></v-text-field>
-          <v-btn color="primary" @click="addMinion(1)">Add Minion</v-btn>
+          <v-text-field v-model="enemyCurrent.a" label="Attack" type="number" ref="enemyAtk" required></v-text-field>
+          <v-text-field v-model="enemyCurrent.h" label="Health" type="number" required @keydown.enter="addMinion('enemy', true)"></v-text-field>
+          <v-btn color="primary" @click="addMinion('enemy')">Add Minion</v-btn>
         </v-form>
       </v-flex>
         <v-btn color="error" @click="simulate" :loading="simLoading" class="simulate-btn">ＳＩＭＵＬＡＴＥ</v-btn>
@@ -49,15 +48,18 @@
         <v-data-table
           :headers="headers"
           :items="results"
+          :custom-sort="minionSort"
+          sort-icon="fa-angle-up"
           class="elevation-1"
           hide-actions
           v-if="results.length > 0"
         >
+        
           <template slot="items" slot-scope="props">
             <tr :class="props.item.isEnemy === 0 ? 'friendly-minion': 'enemy-minion'">
               <td>{{ props.item.stats }}</td>
-              <td class="text-xs-left">{{ props.item.healthAfter }}</td>
-              <td class="text-xs-left">{{ props.item.survival }}</td>
+              <td class="text-xs-left">{{ Number(props.item.healthAfter.toFixed(2)) }}</td>
+              <td class="text-xs-left">{{ Number((props.item.survival) * 100).toFixed(2) + '%' }}</td>
             </tr>
           </template>
         </v-data-table>
@@ -74,15 +76,25 @@
 import shortid from 'shortid'
 import massHysteriaSim from '../simulate.js'
 
+const sortMinions = (a, b) => {
+  if (a.isEnemy === b.isEnemy) {
+    return 0
+  } else if (a.isEnemy && !b.isEnemy) {
+    return 1
+  } else if (!a.isEnemy && b.isEnemy) {
+    return -1
+  }
+}
+
 export default {
   data: () => ({
-    currentFriendly: {
+    friendlyCurrent: {
       a: null,
       h: null,
       $: shortid.generate()
     },
     friendlyMinions: [],
-    currentEnemy: {
+    enemyCurrent: {
       a: null,
       h: null,
       $: shortid.generate()
@@ -94,7 +106,6 @@ export default {
     headers: [
       {
         text: 'Minion',
-        sortable: false,
         value: 'stats'
       },
       {
@@ -109,9 +120,8 @@ export default {
     results: []
   }),
   methods: {
-    addMinion(t) {
-      let type = t === 1 ? 'enemy' : 'friendly'
-      let current = ['current' + type[0].toUpperCase() + type.slice(1)]
+    addMinion(type, kb) {
+      let current = [type + 'Current']
       if (!this.validateInput(current)) return
       this[type + 'Minions'].push(this[current])
       this[current] = {
@@ -119,11 +129,11 @@ export default {
         h: null,
         $: shortid.generate()
       }
+      // focus attack text box again after pressing enter. makes for better ux
+      if (kb) this.focus(type)
     },
-    delMinion(id, t) {
-      let type = t === 1 ? 'enemy' : 'friendly'
-      this[type + 'Minions'].splice(
-        this[type + 'Minions'].findIndex(e => e.$ === id), 1)
+    delMinion(id, type) {
+      this[type + 'Minions'].splice(this[type + 'Minions'].findIndex(e => e.$ === id), 1)
     },
     showSnack(text) {
       if (this.snackbar && text === this.snackText) {
@@ -178,30 +188,52 @@ export default {
       let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1]).flat()
       this.simLoading = true
       try {
-        let result = massHysteriaSim(friendlyMinions.concat(enemyMinions), 10000)
+        let result = massHysteriaSim(friendlyMinions.concat(enemyMinions).map(e => parseInt(e)), 10000)
         result = result.attack.map((e, i) => {
           return {
             stats: `${e}/${result.healthBefore[i]}`,
-            healthAfter: Number(result.healthAfter[i].toFixed(2)),
-            survival: Number(result.survival[i].toFixed(4)) * 100 + '%',
+            healthAfter: result.healthAfter[i],
+            survival: result.survival[i],
             isEnemy: result.isEnemy[i]
           }
         })
-        this.results = result
+        this.results = result.sort(sortMinions)
       } catch (e) {
         this.showSnack(e)
       }
       this.simLoading = false
     },
-    reset (t) {
-      let type = t === 1 ? 'enemy' : 'friendly'
+    reset (type) {
       this[type + 'Minions'] = []
-      let current = ['current' + type[0].toUpperCase() + type.slice(1)]
+      let current = [type + 'Current']
       this[current] = {
         a: null,
         h: null,
         $: shortid.generate()
       }
+    },
+    minionSort (minions, header, isDescending) {
+      const sortAscDesc = (isDescending, attr) => {
+        const sortAsc = (a, b) => a[attr] - b[attr]
+        const sortDesc = (a, b) => b[attr] - a[attr]
+        return isDescending ? sortDesc : sortAsc
+      }
+
+      switch (header) {
+        case 'stats':
+          return minions.sort(sortMinions)
+        case 'healthAfter':
+          return minions.sort(sortAscDesc(isDescending, 'healthAfter'))
+
+        case 'survival':
+          return minions.sort(sortAscDesc(isDescending, 'survival'))
+        default:
+          break
+      }
+      return minions
+    },
+    focus (type) {
+      this.$nextTick(this.$refs[type + 'Atk'].focus)
     }
   }
 }
@@ -224,8 +256,8 @@ export default {
   padding-right: 4px !important;
 }
 
-th > i {
-  display: none !important;
+.v-icon.fa.fa-angle-up {
+  margin-left: 10px;
 }
 
 th {

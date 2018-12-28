@@ -19,11 +19,11 @@
     <v-content>
       <Board/>
     </v-content>
-    <!-- <v-footer dark>
+    <v-footer dark>
       <v-layout align-center justify-center row fill-height>
-        Made with <img src="https://cdn.frankerfacez.com/emoticon/103171/4" alt="gachiGASM" width="20px" class="gachi">
+        I Made This <img src="https://static-cdn.jtvnw.net/emoticons/v1/1/1.0" alt="gachiGASM" width="20px" class="smile">
       </v-layout>
-    </v-footer> -->
+    </v-footer>
   </v-app>
 </template>
 
@@ -44,7 +44,7 @@ export default {
 </script>
 
 <style>
-.gachi {
+.smile {
   margin-left: 5px;
 }
 
