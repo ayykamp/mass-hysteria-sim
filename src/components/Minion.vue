@@ -1,5 +1,4 @@
 <template>
-  <!-- v-for="minion in friendlyMinions" :key="minion.$" -->
     <v-chip :class="friendly ? 'friendly-chip' : 'enemy-chip'">
       {{ `${minion.a}/${minion.h}`}}
       <div class="v-chip__close">
@@ -14,19 +13,9 @@
 
 <script>
 export default {
- /*  data() {
-    return {
-      key: value
-    }
-  }, */
   props: {
     minion: Object,
     friendly: Boolean
-  },
-  methods: {
-    name() {
-      
-    }
   },
 }
 </script>

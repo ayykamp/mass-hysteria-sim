@@ -1,23 +1,33 @@
 <template>
   <div>
+    <v-text-field v-model="numberOfRuns" label="Number of Runs" type="number"></v-text-field>
     <v-btn color="error" @click="simulate" :loading="simLoading" class="simulate-btn">ＳＩＭＵＬＡＴＥ</v-btn>
-    <v-data-table
-      :headers="headers"
-      :items="results"
-      :custom-sort="minionSort"
-      sort-icon="fa-angle-up"
-      class="elevation-1"
-      hide-actions
-      v-if="results.length > 0"
-    >
-      <template slot="items" slot-scope="props">
-        <tr :class="props.item.isEnemy === 0 ? 'friendly-minion': 'enemy-minion'">
-          <td>{{ props.item.stats }}</td>
-          <td class="text-xs-left">{{ Number(props.item.healthAfter.toFixed(2)) }}</td>
-          <td class="text-xs-left">{{ Number((props.item.survival) * 100).toFixed(2) + '%' }}</td>
-        </tr>
-      </template>
-    </v-data-table>
+
+    <div v-if="results.length > 0">
+      <h2 id="clear-chance" class="important-results">
+        Chance to clear the enemy Board: {{ Number((clearChance) * 100).toFixed(2) + '%' }}
+      </h2>
+      <h2 id="remaining-damage" class="important-results">
+        Average remaining Damage: {{ Number(remainingDamage.toFixed(2)) }}
+      </h2>
+      <v-data-table
+        :headers="headers"
+        :items="results"
+        :custom-sort="minionSort"
+        sort-icon="fa-angle-up"
+        class="elevation-1"
+        hide-actions
+      >
+        <template slot="items" slot-scope="props">
+          <tr :class="props.item.isEnemy === 0 ? 'friendly-minion': 'enemy-minion'">
+            <td>{{ props.item.stats }}</td>
+            <td class="text-xs-left">{{ Number(props.item.healthAfter.toFixed(2)) }}</td>
+            <td class="text-xs-left">{{ Number((props.item.survival) * 100).toFixed(2) + '%' }}</td>
+          </tr>
+        </template>
+      </v-data-table>
+    </div>
+    
   </div>
 </template>
 
@@ -30,6 +40,9 @@ export default {
   data() {
     return {
       results: [],
+      clearChance: null,
+      remainingDamage: null,
+      numberOfRuns: 10000,
       simLoading: false,
       headers: [
         {
@@ -58,18 +71,21 @@ export default {
   methods: {
     simulate() {
       if (this.enemyMinions.length === 0 && this.friendlyMinions.length === 0) {
-        return this.showSnack('Please add some minions : )')
+        return this.$emit('error', 'Please add some minions : )')
       } else if (
         (this.enemyMinions.length === 1 && this.friendlyMinions.length === 0) ||
         (this.enemyMinions.length === 0 && this.friendlyMinions.length === 1)
       ) {
-        return this.showSnack('Nothing is going to happen : )')
+        return this.$emit('error', 'Nothing is going to happen : )')
       }
+      let runs = parseInt(this.numberOfRuns)
       let friendlyMinions = this.friendlyMinions.map(e => [e.a, e.h, 0]).flat()
       let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1]).flat()
       this.simLoading = true
       try {
-        let result = massHysteriaSim(friendlyMinions.concat(enemyMinions).map(e => parseInt(e)), 10000)
+        let result = massHysteriaSim(friendlyMinions.concat(enemyMinions).map(e => parseInt(e)), runs)
+        this.clearChance = result.clearChance
+        this.remainingDamage = result.remainingDamage
         result = result.attack.map((e, i) => {
           return {
             stats: `${e}/${result.healthBefore[i]}`,
@@ -79,6 +95,7 @@ export default {
           }
         })
         this.results = result
+
       } catch (e) {
         this.$emit('error', e.message)
       }
@@ -121,5 +138,13 @@ export default {
 </script>
 
 <style>
-
+  #clear-chance {
+    padding: 15px 15px 0px 15px;
+  }
+  #remaining-damage {
+    padding: 15px;
+  }
+  .important-results {
+    font-size: 1.2em;
+  }
 </style>

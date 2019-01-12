@@ -100,6 +100,7 @@ const massHysteria = boardStats => {
 // Output: mean stats left on board and proportion of trials in which every 
 // minion dies (a full board clear)
 const testMassHysteria = (stats, trials) => {
+  
   const n = stats.length/3
   if (n % 1 !== 0){
     return 'Invalid Minion Stats.'

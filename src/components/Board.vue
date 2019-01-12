@@ -68,16 +68,16 @@ export default {
     validateInput() {
       const current = this.current
       if (current.a === null || current.h === null) {
-        this.showSnack('Please add some stats')
+        this.$emit('error', 'Please add some stats')
         return false
       } else if (!current.a.match(/[⌃0-9]/) || !current.h.match(/[⌃0-9]/)) {
-        this.showSnack('Invalid Input')
+        this.$emit('error', 'Invalid Input')
         return false
       } else if (current.h === '0') {
-        this.showSnack('No 0 HP minions')
+        this.$emit('error', 'No 0 HP minions')
         return false
       } else if (this.minions.length >= 7) {
-        this.showSnack('Only 7 Minions allowed')
+        this.$emit('error', 'Only 7 Minions allowed')
         return false
       } else {
         return true
