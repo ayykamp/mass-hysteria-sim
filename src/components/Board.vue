@@ -8,6 +8,7 @@
     <v-form>
       <v-text-field v-model="current.a" label="Attack" type="number" ref="attackTextField" required></v-text-field>
       <v-text-field v-model="current.h" label="Health" type="number" required @keydown.enter="addMinion(true)"></v-text-field>
+      <v-checkbox v-model="current.d" label="Divine Shield?"></v-checkbox>
       <v-btn color="primary" @click="addMinion()">Add Minion</v-btn>
     </v-form>
   </div>
@@ -22,6 +23,7 @@ export default {
     current: {
       a: null,
       h: null,
+      d: null,
       $: shortid.generate()
     },
   }),
@@ -88,6 +90,7 @@ export default {
       this.current = {
         a: null,
         h: null,
+        d: null,
         $: shortid.generate()
       }
     },

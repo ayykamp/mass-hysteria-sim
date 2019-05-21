@@ -47,7 +47,11 @@ const matrix = (arr, ncol, byrow) => {
   }
   return result
 }
-
+/* [
+  [
+    [fill * dim3] * dim2
+  ] * dim1
+] */
 // Create a filled 3D array
 const arr3D = (fillVal, dim1, dim2, dim3) => {
   let result = []
@@ -67,8 +71,8 @@ const arr3D = (fillVal, dim1, dim2, dim3) => {
 // i.e. (attack1, health1, side1, attack2, health2, side 2,...)
 // Output: matrix of stats of minions after mass hysteria has been cast
 const massHysteria = boardStats => {
-  const n = boardStats.length/3
-  let stats = matrix(boardStats, 3, true)
+  const n = boardStats.length/4
+  let stats = matrix(boardStats, 4, true)
   const order = mysample(range(n))
   // for each minion
   for (let i = 0; i < n; i++) {
@@ -87,8 +91,16 @@ const massHysteria = boardStats => {
         // choose one
         attackee = attackee[0]
         // and then attack it
-        stats[attacker][1] = stats[attacker][1] - stats[attackee][0]
-        stats[attackee][1] = stats[attackee][1] - stats[attacker][0]
+        if (stats[attacker][3] === 1) {
+          stats[attacker][3] = 0
+        } else {
+          stats[attacker][1] = stats[attacker][1] - stats[attackee][0]
+        }
+        if (stats[attackee][3] === 1) {
+          stats[attackee][3] = 0
+        } else {
+          stats[attackee][1] = stats[attackee][1] - stats[attacker][0]
+        }
       }
     }
   }
@@ -101,11 +113,11 @@ const massHysteria = boardStats => {
 // minion dies (a full board clear)
 const testMassHysteria = (stats, trials) => {
   
-  const n = stats.length/3
+  const n = stats.length/4
   if (n % 1 !== 0){
     return 'Invalid Minion Stats.'
   } else {
-    const statsMat = matrix(stats, 3, true)
+    const statsMat = matrix(stats, 4, true)
     // Values for Chart at end
     const attack = []
     const healthBefore = []
@@ -118,7 +130,7 @@ const testMassHysteria = (stats, trials) => {
   
     const survival = new Array(n).fill(0)
     // Create 3D array to house the trials
-    let simStats = arr3D(0, n, 3, trials)
+    let simStats = arr3D(0, n, 4, trials)
     let cleared = new Array(trials).fill(1)
     // for each trial
     for (let trial =0; trial < trials; trial++) {
