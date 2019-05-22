@@ -1,6 +1,7 @@
 # Mass Hysteria Simulator
 
 Simulation utility for the Hearthstone card Mass Hysteria.
+
 ![Hearthstone card Mass Hysteria][mh]
 
 [Demo here.][demo]
