@@ -79,8 +79,8 @@ export default {
         return this.$emit('error', 'Nothing is going to happen : )')
       }
       let runs = parseInt(this.numberOfRuns)
-      let friendlyMinions = this.friendlyMinions.map(e => [e.a, e.h, 0, e.d ? 1: 0]).flat()
-      let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1, e.d ? 1: 0]).flat()
+      let friendlyMinions = this.friendlyMinions.map(e => [e.a, e.h, 0, e.d ? 1: 0, e.p ? 1: 0]).flat()
+      let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1, e.d ? 1: 0, e.p ? 1: 0]).flat()
       this.simLoading = true
       try {
         let result = massHysteriaSim(friendlyMinions.concat(enemyMinions).map(e => parseInt(e)), runs)
@@ -88,10 +88,14 @@ export default {
         this.remainingDamage = result.remainingDamage
         result = result.attack.map((e, i) => {
           return {
-            stats: `${e}/${result.healthBefore[i]}`,
+            stats: `${e}/${result.healthBefore[i]}` + 
+              `${result.divineShield[i] ? ' 🛡️': ''}` +
+              `${result.poisonous[i] ? ' ☠': ''}`,
             healthAfter: result.healthAfter[i],
             survival: result.survival[i],
-            isEnemy: result.isEnemy[i]
+            isEnemy: result.isEnemy[i],
+            divineShield: result.divineShield[i],
+            poisonous: result.poisonous[i]
           }
         })
         this.results = result

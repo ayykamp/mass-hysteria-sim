@@ -19,11 +19,11 @@ const shuffle = array => {
 
 // a remake of the sample function that prevents sample(x)=sample(1:x) when length(x)=1
 const mysample = (x) => {
-    if (x.length > 1) {
-      return shuffle(x)
-    } else {
-      return x
-    }
+  if (x.length > 1) {
+    return shuffle(x)
+  } else {
+    return x
+  }
 }
 
 // Create list from 0 to n-1
@@ -34,35 +34,52 @@ const range = n => {
 // Create a 2D array
 const matrix = (arr, ncol, byrow) => {
   const result = []
-  for (let i=0; i < arr.length/ncol; i++) {
+  for (let i = 0; i < arr.length / ncol; i++) {
     const row = []
-    for (let j=0; j < ncol; j++) {
+    for (let j = 0; j < ncol; j++) {
       if (byrow) {
-        row.push(arr[i*ncol+j])
+        row.push(arr[i * ncol + j])
       } else {
-        row.push(arr[i+ncol*j])
+        row.push(arr[i + ncol * j])
       }
     }
     result.push(row)
   }
   return result
 }
-/* [
-  [
-    [fill * dim3] * dim2
-  ] * dim1
-] */
 // Create a filled 3D array
 const arr3D = (fillVal, dim1, dim2, dim3) => {
   let result = []
-  for (let i=0; i < dim1; i++) {
+  for (let i = 0; i < dim1; i++) {
     const row = []
-    for (let j=0; j < dim2; j++) {
+    for (let j = 0; j < dim2; j++) {
       row.push(new Array(dim3).fill(fillVal))
     }
     result.push(row)
   }
   return result
+}
+
+// simulate an attack
+const attack = (self, victim) => {
+  resolveMinion(self, victim)
+  resolveMinion(victim, self)
+}
+
+// resolve an attack for one minion, taking into consideration divine shield and poisonous
+const resolveMinion = (self, victim) => {
+  // if minion has divine shield, take no damage and remove divine shield
+  if (self[3] === 1 && victim[0] >= 1) {
+    self[3] = 0
+  }
+  // if victim has poisonous and at least 1 attack, die 
+  else if (victim[4] === 1 && victim[0] >= 1) {
+    self[1] = 0
+  }
+  // if none of the previous apply, take normal damage
+  else {
+    self[1] = self[1] - victim[0]
+  }
 }
 
 // Mass hysteria simulation function:
@@ -71,8 +88,8 @@ const arr3D = (fillVal, dim1, dim2, dim3) => {
 // i.e. (attack1, health1, side1, attack2, health2, side 2,...)
 // Output: matrix of stats of minions after mass hysteria has been cast
 const massHysteria = boardStats => {
-  const n = boardStats.length/4
-  let stats = matrix(boardStats, 4, true)
+  const n = boardStats.length / 5
+  let stats = matrix(boardStats, 5, true)
   const order = mysample(range(n))
   // for each minion
   for (let i = 0; i < n; i++) {
@@ -91,16 +108,7 @@ const massHysteria = boardStats => {
         // choose one
         attackee = attackee[0]
         // and then attack it
-        if (stats[attacker][3] === 1) {
-          stats[attacker][3] = 0
-        } else {
-          stats[attacker][1] = stats[attacker][1] - stats[attackee][0]
-        }
-        if (stats[attackee][3] === 1) {
-          stats[attackee][3] = 0
-        } else {
-          stats[attackee][1] = stats[attackee][1] - stats[attacker][0]
-        }
+        attack(stats[attacker], stats[attackee])
       }
     }
   }
@@ -112,28 +120,32 @@ const massHysteria = boardStats => {
 // Output: mean stats left on board and proportion of trials in which every 
 // minion dies (a full board clear)
 const testMassHysteria = (stats, trials) => {
-  
-  const n = stats.length/4
-  if (n % 1 !== 0){
+
+  const n = stats.length / 5
+  if (n % 1 !== 0) {
     return 'Invalid Minion Stats.'
   } else {
-    const statsMat = matrix(stats, 4, true)
+    const statsMat = matrix(stats, 5, true)
     // Values for Chart at end
     const attack = []
     const healthBefore = []
     const isEnemy = []
+    const divineShield = []
+    const poisonous = []  
     for (let i = 0; i < statsMat.length; i++) {
       attack.push(statsMat[i][0])
       healthBefore.push(statsMat[i][1])
       isEnemy.push(statsMat[i][2])
+      divineShield.push(statsMat[i][3])
+      poisonous.push(statsMat[i][4])
     }
-  
+
     const survival = new Array(n).fill(0)
     // Create 3D array to house the trials
-    let simStats = arr3D(0, n, 4, trials)
+    let simStats = arr3D(0, n, 5, trials)
     let cleared = new Array(trials).fill(1)
     // for each trial
-    for (let trial =0; trial < trials; trial++) {
+    for (let trial = 0; trial < trials; trial++) {
       // do the trial and put it in the array
       for (let i = 0; i < simStats.length; i++) {
         simStats[i][2][trial] = statsMat[i][2]
@@ -147,12 +159,12 @@ const testMassHysteria = (stats, trials) => {
 
       // Get each minion's chance of survival and the chance of clearing the enemy's board
       for (let i = 0; i < simStats.length; i++) {
-        survival[i] = survival[i] + (simStats[i][1][trial] > 0 ? 1/trials : 0)
+        survival[i] = survival[i] + (simStats[i][1][trial] > 0 ? 1 / trials : 0)
         // see whether or not the trial resulted in a full clear of enemy board
         if (simStats[i][1][trial] * simStats[i][2][trial] > 0.05) {
           cleared[trial] = 0
         }
-      } 
+      }
     }
     const healthAfter = []
     // const chanceOfSurvival = [];
@@ -161,13 +173,13 @@ const testMassHysteria = (stats, trials) => {
       for (let j = 0; j < trials; j++) {
         healthSum += simStats[i][1][j]
       }
-      healthAfter.push(healthSum/trials)
+      healthAfter.push(healthSum / trials)
     }
-    const clearChance = cleared.reduce((curr, next) => curr+next)/cleared.length
+    const clearChance = cleared.reduce((curr, next) => curr + next) / cleared.length
 
     let remainingDamage = 0
     for (let i = 0; i < attack.length; i++) {
-      remainingDamage += attack[i]*survival[i]*isEnemy[i]  
+      remainingDamage += attack[i] * survival[i] * isEnemy[i]
     }
 
     // Printing it out and formatting numbers.
@@ -186,7 +198,9 @@ const testMassHysteria = (stats, trials) => {
       survival,
       isEnemy,
       clearChance,
-      remainingDamage
+      remainingDamage,
+      divineShield,
+      poisonous
     }
   }
 }
