@@ -24,8 +24,8 @@ const getDefaultMinion = () => {
   return {
     a: null,
     h: null,
-    d: null,
-    p: null,
+    d: false,
+    p: false,
     $: shortid.generate()
   }
 }
@@ -175,6 +175,11 @@ form > .v-text-field {
 .add-minion {
   clear: both;
   display: block;
+}
+
+.emoji {
+  color: black;
+  display: inline;
 }
 
 @keyframes shake {

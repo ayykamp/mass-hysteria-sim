@@ -20,7 +20,8 @@
       >
         <template slot="items" slot-scope="props">
           <tr :class="props.item.isEnemy === 0 ? 'friendly-minion': 'enemy-minion'">
-            <td>{{ props.item.stats }}</td>
+            <td>{{ props.item.stats }} <div class="emoji">{{ `${props.item.divineShield ? ' 🛡️': ''}` + 
+              `${props.item.poisonous ? ' ☠': ''}` }}</div></td>
             <td class="text-xs-left">{{ Number(props.item.healthAfter.toFixed(2)) }}</td>
             <td class="text-xs-left">{{ Number((props.item.survival) * 100).toFixed(2) + '%' }}</td>
           </tr>
@@ -88,9 +89,7 @@ export default {
         this.remainingDamage = result.remainingDamage
         result = result.attack.map((e, i) => {
           return {
-            stats: `${e}/${result.healthBefore[i]}` + 
-              `${result.divineShield[i] ? ' 🛡️': ''}` +
-              `${result.poisonous[i] ? ' ☠': ''}`,
+            stats: `${e}/${result.healthBefore[i]}`,
             healthAfter: result.healthAfter[i],
             survival: result.survival[i],
             isEnemy: result.isEnemy[i],

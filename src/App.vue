@@ -6,6 +6,9 @@
         <span class="font-weight-light">Simulator</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <batch-input-minions>
+        
+      </batch-input-minions>
       <v-btn
         flat
         target="_blank"
@@ -54,12 +57,14 @@
 <script>
 import Board from './components/Board'
 import SimulationResults from './components/SimulationResults'
+import BatchInputMinions from './components/BatchInputMinions'
 
 export default {
   name: 'Mass-Hysteria-Simulator',
   components: {
     Board,
-    SimulationResults
+    SimulationResults,
+    BatchInputMinions
   },
   data () {
     return {
