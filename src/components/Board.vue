@@ -19,16 +19,7 @@
 import shortid from 'shortid'
 import Minion from './Minion'
 
-// a: attack, h: health, d: divine shield, p: poisonous, $: unique id
-const getDefaultMinion = () => {
-  return {
-    a: null,
-    h: null,
-    d: false,
-    p: false,
-    $: shortid.generate()
-  }
-}
+import { getDefaultMinion } from '../util.js'
 
 export default {
   data: () => ({
