@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import shortid from 'shortid'
 import Minion from './Minion'
 
 import { getDefaultMinion } from '../util.js'
@@ -81,12 +80,7 @@ export default {
     },
     reset () {
       this.minions = []
-      this.current = {
-        a: null,
-        h: null,
-        d: null,
-        $: shortid.generate()
-      }
+      this.current = getDefaultMinion()
     },
     focus () {
       this.$nextTick(this.$refs.attackTextField.focus)

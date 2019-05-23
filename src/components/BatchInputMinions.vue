@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" max-width="600px">
     <template v-slot:activator="{ on }">
-      <v-btn color="primary" dark v-on="on">Open Dialog</v-btn>
+      <v-btn color="primary" dark v-on="on">Batch Input</v-btn>
     </template>
     <v-card>
       <v-form v-model=formValid ref="form">
