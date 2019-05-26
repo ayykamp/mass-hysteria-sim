@@ -6,9 +6,7 @@
         <span class="font-weight-light">Simulator</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <batch-input-minions>
-        
-      </batch-input-minions>
+      <batch-edit />
       <v-btn
         flat
         target="_blank"
@@ -56,15 +54,15 @@
 
 <script>
 import Board from './components/Board'
-import SimulationResults from './components/SimulationResults'
-import BatchInputMinions from './components/BatchInputMinions'
+const SimulationResults = () => import(/* webpackChunkName: "SimulationResults" */ './components/SimulationResults')
+import BatchEdit from './components/BatchEdit'
 
 export default {
   name: 'Mass-Hysteria-Simulator',
   components: {
     Board,
     SimulationResults,
-    BatchInputMinions
+    BatchEdit
   },
   data () {
     return {

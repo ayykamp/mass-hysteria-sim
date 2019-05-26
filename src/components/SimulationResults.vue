@@ -33,9 +33,7 @@
 </template>
 
 <script>
-import massHysteriaSim from '../simulate.js'
-
-
+const getMassHysteriaSim = () => import(/* webpackChunkName: "SimualtionCode" */ '../simulate.js')
 
 export default {
   data() {
@@ -70,7 +68,7 @@ export default {
     },
   },
   methods: {
-    simulate() {
+    async simulate() {
       if (this.enemyMinions.length === 0 && this.friendlyMinions.length === 0) {
         return this.$emit('error', 'Please add some minions : )')
       } else if (
@@ -84,6 +82,7 @@ export default {
       let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1, e.d ? 1: 0, e.p ? 1: 0]).flat()
       this.simLoading = true
       try {
+        const massHysteriaSim = (await getMassHysteriaSim()).default
         let result = massHysteriaSim(friendlyMinions.concat(enemyMinions).map(e => parseInt(e)), runs)
         this.clearChance = result.clearChance
         this.remainingDamage = result.remainingDamage

@@ -3,5 +3,6 @@
   "alias": "mass-hysteria-sim",
   "builds": [
     { "src": "**", "use": "@now/static" }
-  ]
+  ],
+  "version": 2
 }

@@ -18,10 +18,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
-
-# Hosting
-.firebase
-.firebaserc
-firebase.json
-
-public/g.js
