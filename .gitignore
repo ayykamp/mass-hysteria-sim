@@ -19,9 +19,4 @@ yarn-error.log*
 *.sln
 *.sw*
 
-# Hosting
-.firebase
-.firebaserc
-firebase.json
-
-public/g.js
+src/plugins/ga.js

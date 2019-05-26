@@ -8,22 +8,20 @@
     <v-form>
       <v-text-field v-model="current.a" label="Attack" type="number" ref="attackTextField" required></v-text-field>
       <v-text-field v-model="current.h" label="Health" type="number" required @keydown.enter="addMinion(true)"></v-text-field>
-      <v-btn color="primary" @click="addMinion()">Add Minion</v-btn>
+      <v-checkbox v-model="current.d" label="Divine Shield" :ripple="false" color="primary" class="divine-shield"></v-checkbox>
+      <v-checkbox v-model="current.p" label="Poisonous" :ripple="false" color="primary" class="poisonous"></v-checkbox>
+      <v-btn color="primary" class="add-minion" @click="addMinion()">Add Minion</v-btn>
     </v-form>
   </div>
 </template>
 
 <script>
-import shortid from 'shortid'
 import Minion from './Minion'
+import { getDefaultMinion } from '../util.js'
 
 export default {
   data: () => ({
-    current: {
-      a: null,
-      h: null,
-      $: shortid.generate()
-    },
+    current: getDefaultMinion()
   }),
   computed: {
     minions: {
@@ -53,11 +51,7 @@ export default {
     addMinion(kb) {
       if (!this.validateInput()) return
       this.minions = this.minions.concat([this.current])
-      this.current = {
-        a: null,
-        h: null,
-        $: shortid.generate()
-      }
+      this.current = getDefaultMinion()
       // focus attack text box again after pressing enter. makes for better ux
       if (kb) this.focus()
     },
@@ -85,14 +79,37 @@ export default {
     },
     reset () {
       this.minions = []
-      this.current = {
-        a: null,
-        h: null,
-        $: shortid.generate()
-      }
+      this.current = getDefaultMinion()
     },
     focus () {
       this.$nextTick(this.$refs.attackTextField.focus)
+    },
+    stringToBoard (string) {
+      let board = string.split(' ')
+      const statsRegex = /[0-9]+\/[0-9]+/gm
+      board.forEach((e, i) => {
+        if (!e) return
+        let minion = getDefaultMinion()
+        let stats = e.match(statsRegex)[0].split('/')
+        minion.a = stats[0]
+        minion.h = stats[1]
+
+        minion.d = e.includes('d')
+        minion.p = e.includes('p')
+        
+        this.minions = this.minions.concat([minion])
+      })
+    }
+  },
+  mounted () {
+    if (this.friendly) {
+      this.$root.$on('stringToFriendly', string => {
+        this.stringToBoard(string)
+      })
+    } else {
+      this.$root.$on('stringToEnemy', string => {
+        this.stringToBoard(string)        
+      })
     }
   }
 }
@@ -156,6 +173,24 @@ th {
 
 form > .v-text-field {
   clear: both;
+}
+
+.divine-shield {
+  float: left;
+}
+
+.poisonous {
+  float: right;
+}
+
+.add-minion {
+  clear: both;
+  display: block;
+}
+
+.emoji {
+  color: black;
+  display: inline;
 }
 
 @keyframes shake {

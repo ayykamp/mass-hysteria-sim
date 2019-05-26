@@ -1,12 +1,16 @@
 import Vue from 'vue'
-import Vuetify from 'vuetify'
 import './plugins/vuetify'
 import App from './App.vue'
+import VueAnalytics from 'vue-analytics'
 import store from './store'
-
-Vue.config.productionTip = false
-
-Vue.use(Vuetify)
+import { ID } from './plugins/ga'
+ 
+Vue.use(VueAnalytics, {
+  id: ID,
+  debug: {
+    sendHitTask: process.env.NODE_ENV === 'production'
+  }
+})
 
 new Vue({
   store,

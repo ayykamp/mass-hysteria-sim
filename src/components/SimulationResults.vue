@@ -20,7 +20,8 @@
       >
         <template slot="items" slot-scope="props">
           <tr :class="props.item.isEnemy === 0 ? 'friendly-minion': 'enemy-minion'">
-            <td>{{ props.item.stats }}</td>
+            <td>{{ props.item.stats }} <div class="emoji">{{ `${props.item.divineShield ? ' 🛡️': ''}` + 
+              `${props.item.poisonous ? ' ☠': ''}` }}</div></td>
             <td class="text-xs-left">{{ Number(props.item.healthAfter.toFixed(2)) }}</td>
             <td class="text-xs-left">{{ Number((props.item.survival) * 100).toFixed(2) + '%' }}</td>
           </tr>
@@ -32,9 +33,7 @@
 </template>
 
 <script>
-import massHysteriaSim from '../simulate.js'
-
-
+const getMassHysteriaSim = () => import(/* webpackChunkName: "SimualtionCode" */ '../simulate.js')
 
 export default {
   data() {
@@ -69,7 +68,7 @@ export default {
     },
   },
   methods: {
-    simulate() {
+    async simulate() {
       if (this.enemyMinions.length === 0 && this.friendlyMinions.length === 0) {
         return this.$emit('error', 'Please add some minions : )')
       } else if (
@@ -79,10 +78,11 @@ export default {
         return this.$emit('error', 'Nothing is going to happen : )')
       }
       let runs = parseInt(this.numberOfRuns)
-      let friendlyMinions = this.friendlyMinions.map(e => [e.a, e.h, 0]).flat()
-      let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1]).flat()
+      let friendlyMinions = this.friendlyMinions.map(e => [e.a, e.h, 0, e.d ? 1: 0, e.p ? 1: 0]).flat()
+      let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1, e.d ? 1: 0, e.p ? 1: 0]).flat()
       this.simLoading = true
       try {
+        const massHysteriaSim = (await getMassHysteriaSim()).default
         let result = massHysteriaSim(friendlyMinions.concat(enemyMinions).map(e => parseInt(e)), runs)
         this.clearChance = result.clearChance
         this.remainingDamage = result.remainingDamage
@@ -91,7 +91,9 @@ export default {
             stats: `${e}/${result.healthBefore[i]}`,
             healthAfter: result.healthAfter[i],
             survival: result.survival[i],
-            isEnemy: result.isEnemy[i]
+            isEnemy: result.isEnemy[i],
+            divineShield: result.divineShield[i],
+            poisonous: result.poisonous[i]
           }
         })
         this.results = result

@@ -14,6 +14,10 @@ export default new Vuex.Store({
     },
     updateEnemy (state, enemyMinions) {
       state.enemyMinions = enemyMinions
+    },
+    reset (state) {
+      state.friendlyMinions = []
+      state.enemyMinions = []    
     }
   },
   actions: {
