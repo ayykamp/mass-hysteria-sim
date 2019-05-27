@@ -37,7 +37,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" flat @click="this.$emit('close')">Close</v-btn>
+        <v-btn color="blue darken-1" flat @click="$emit('close')">Close</v-btn>
         <v-btn color="primary" @click="save()">Save</v-btn>
       </v-card-actions>
     </v-form>
