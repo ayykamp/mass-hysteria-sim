@@ -21,4 +21,12 @@ export default {
 .v-chip__content {
   font-size: 14px;
 }
+
+.enemy-chip {
+  background-color: rgba(128, 0, 0, .5) !important;
+}
+
+.friendly-chip {
+  background-color: rgba(0, 128, 0, .5) !important;
+}
 </style>

@@ -126,36 +126,8 @@ export default {
 </script>
 
 <style>
-.animated {
-  -webkit-animation: 650ms shake alternate ease-in-out;
-  -moz-animation: 650ms shake alternate ease-in-out;
-  -ms-animation: 650ms shake alternate ease-in-out;
-  -o-animation: 650ms shake alternate ease-in-out;
-  animation: 650ms shake alternate ease-in-out;
-}
-
-.close {
-  width: 20px;
-}
-
-.v-chip__content {
-  padding-right: 4px !important;
-}
-
-.v-icon.fa.fa-angle-up {
-  margin-left: 10px;
-}
-
 th {
   font-size: 1em !important;
-}
-
-.enemy-chip {
-  background-color: rgba(128, 0, 0, .5) !important;
-}
-
-.friendly-chip {
-  background-color: rgba(0, 128, 0, .5) !important;
 }
 
 .friendly-minion {
@@ -201,28 +173,5 @@ form > .v-text-field {
 .emoji {
   color: black;
   display: inline;
-}
-
-@keyframes shake {
-  10%,
-  90% {
-    transform: translate3d(-1px, 0, 0);
-  }
-
-  20%,
-  80% {
-    transform: translate3d(2px, 0, 0);
-  }
-
-  30%,
-  50%,
-  70% {
-    transform: translate3d(-2px, 0, 0);
-  }
-
-  40%,
-  60% {
-    transform: translate3d(2px, 0, 0);
-  }
 }
 </style>
