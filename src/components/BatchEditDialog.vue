@@ -75,7 +75,8 @@ export default {
     save () {
       if (this.$refs.form.validate()) {
         this.dialog = false
-        this.$store.commit('reset')
+        this.$store.commit('reset', true)
+        this.$store.commit('reset', false)
         
         if (this.friendlyBoard) {
           this.$root.$emit('stringToFriendly', this.friendlyBoard)
@@ -92,7 +93,7 @@ export default {
     minionsToString (minions) {
       let board = ''
       
-      for (let minion of minions) {
+      for (let minion of Object.values(minions)) {
         let minionString = `${minion.a}/${minion.h}${minion.d ? 'd': ''}${minion.p ? 'p': ''} `
         board += minionString
       }
@@ -102,10 +103,10 @@ export default {
   },
   mounted () {
     this.$on('openDialog', () => {
-      if (this.friendlyMinions.length > 0)
-      this.friendlyBoard = this.minionsToString(this.friendlyMinions)
+      if (Object.keys(this.friendlyMinions).length > 0)
+        this.friendlyBoard = this.minionsToString(this.friendlyMinions)
 
-      if (this.enemyMinions.length > 0)
+      if (Object.keys(this.enemyMinions).length > 0)
         this.enemyBoard = this.minionsToString(this.enemyMinions)
     })
   },

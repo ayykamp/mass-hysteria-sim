@@ -1,13 +1,10 @@
 <template>
-    <v-chip :class="friendly ? 'friendly-chip' : 'enemy-chip'">
+    <v-chip
+      :class="friendly ? 'friendly-chip' : 'enemy-chip'"
+      close
+      @input="$emit('delete', minion.$, 'friendly')"
+    >
       {{ `${minion.a}/${minion.h}${minion.d ? ' 🛡️': ''} ${minion.p ? ' ☠️': ''}`}}
-      <div class="v-chip__close">
-        <img
-          src="/assets/material_cancel.svg"
-          class="v-icon material-icons theme--light close"
-          @click="$emit('delete', minion.$, 'friendly')"
-        >
-      </div>
   </v-chip>
 </template>
 
@@ -21,5 +18,7 @@ export default {
 </script>
 
 <style>
-
+.v-chip__content {
+  font-size: 14px;
+}
 </style>

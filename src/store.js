@@ -5,19 +5,29 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    friendlyMinions: [],
-    enemyMinions: []
+    friendlyMinions: {},
+    enemyMinions: {}
   },
   mutations: {
-    updateFriendly (state, friendlyMinions) {
-      state.friendlyMinions = friendlyMinions
+    addMinion (state, data) {
+      const { friendly, minion } = data
+      if (friendly)
+        state.friendlyMinions[minion.$] = minion
+      else
+        state.enemyMinions[minion.$] = minion
     },
-    updateEnemy (state, enemyMinions) {
-      state.enemyMinions = enemyMinions
+    deleteMinion (state, data) {
+      const { friendly, id } = data      
+      if (friendly)
+        delete state.friendlyMinions[id]
+      else
+        delete state.enemyMinions[id]
     },
-    reset (state) {
-      state.friendlyMinions = []
-      state.enemyMinions = []    
+    reset (state, friendly) {
+      if (friendly)
+        state.friendlyMinions = {}
+      else
+        state.enemyMinions = {}
     }
   },
   actions: {

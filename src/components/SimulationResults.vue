@@ -1,8 +1,7 @@
 <template>
   <div>
-    <v-text-field v-model="numberOfRuns" label="Number of Runs" type="number"></v-text-field>
+    <v-text-field v-model="numberOfRuns" label="Number of Runs" type="number" :rules="runRules"></v-text-field>
     <v-btn color="error" @click="simulate" :loading="simLoading" class="simulate-btn">ＳＩＭＵＬＡＴＥ</v-btn>
-
     <div v-if="results.length > 0">
       <h2 id="clear-chance" class="important-results">
         Chance to clear the enemy Board: {{ Number((clearChance) * 100).toFixed(2) + '%' }}
@@ -28,12 +27,13 @@
         </template>
       </v-data-table>
     </div>
-    
   </div>
 </template>
 
 <script>
 const getMassHysteriaSim = () => import(/* webpackChunkName: "SimualtionCode" */ '../simulate.js')
+import SimWorker from 'worker-loader!../sim.worker.js'
+import PromiseWorker from 'promise-worker'
 
 export default {
   data() {
@@ -43,6 +43,10 @@ export default {
       remainingDamage: null,
       numberOfRuns: 10000,
       simLoading: false,
+      worker: null,
+      runRules: [
+        r => r <= 10000000 || 'That\'s too many runs (Max: 10.000.000)'
+      ],
       headers: [
         {
           text: 'Minion',
@@ -69,24 +73,25 @@ export default {
   },
   methods: {
     async simulate() {
-      if (this.enemyMinions.length === 0 && this.friendlyMinions.length === 0) {
+      if (Object.keys(this.enemyMinions).length === 0 && Object.keys(this.friendlyMinions).length === 0) {
         return this.$emit('error', 'Please add some minions : )')
       } else if (
-        (this.enemyMinions.length === 1 && this.friendlyMinions.length === 0) ||
-        (this.enemyMinions.length === 0 && this.friendlyMinions.length === 1)
+        (Object.keys(this.enemyMinions).length === 1 && Object.keys(this.friendlyMinions).length === 0) ||
+        (Object.keys(this.enemyMinions).length === 0 && Object.keys(this.friendlyMinions).length === 1)
       ) {
         return this.$emit('error', 'Nothing is going to happen : )')
       }
-      let runs = parseInt(this.numberOfRuns)
-      let friendlyMinions = this.friendlyMinions.map(e => [e.a, e.h, 0, e.d ? 1: 0, e.p ? 1: 0]).flat()
-      let enemyMinions = this.enemyMinions.map(e => [e.a, e.h, 1, e.d ? 1: 0, e.p ? 1: 0]).flat()
       this.simLoading = true
+
+      const runs = parseInt(this.numberOfRuns)
+      const friendlyMinions = Object.values(this.friendlyMinions).map(e => [e.a, e.h, 0, e.d ? 1: 0, e.p ? 1: 0]).flat()
+      const enemyMinions = Object.values(this.enemyMinions).map(e => [e.a, e.h, 1, e.d ? 1: 0, e.p ? 1: 0]).flat()
+      const minions = friendlyMinions.concat(enemyMinions).map(e => parseInt(e))
       try {
-        const massHysteriaSim = (await getMassHysteriaSim()).default
-        let result = massHysteriaSim(friendlyMinions.concat(enemyMinions).map(e => parseInt(e)), runs)
+        const result = await this.callWorker(minions, runs)
         this.clearChance = result.clearChance
         this.remainingDamage = result.remainingDamage
-        result = result.attack.map((e, i) => {
+        this.results = result.attack.map((e, i) => {
           return {
             stats: `${e}/${result.healthBefore[i]}`,
             healthAfter: result.healthAfter[i],
@@ -96,12 +101,21 @@ export default {
             poisonous: result.poisonous[i]
           }
         })
-        this.results = result
-
       } catch (e) {
         this.$emit('error', e.message)
       }
       this.simLoading = false
+    },
+    callWorker (minions, runs) {
+      if (this.worker)
+        return this.worker.postMessage({
+          type: 'simulate',
+          minions,
+          runs
+        })
+      else {
+        
+      }
     },
     minionSort (minions, header, isDescending) {
       const sortAscDesc = (isDescending, attr) => {
@@ -136,6 +150,10 @@ export default {
       return minions
     }
   },
+  created () {
+    const worker = new SimWorker('../sim.worker.js')
+    this.worker = new PromiseWorker(worker)
+  }
 }
 </script>
 

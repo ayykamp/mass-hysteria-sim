@@ -167,7 +167,6 @@ const testMassHysteria = (stats, trials) => {
       }
     }
     const healthAfter = []
-    // const chanceOfSurvival = [];
     for (let i = 0; i < simStats.length; i++) {
       let healthSum = 0
       for (let j = 0; j < trials; j++) {

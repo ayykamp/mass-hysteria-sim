@@ -94,6 +94,9 @@ export default {
       }
     },
   },
+  created () {
+    console.log('https://storage.googleapis.com/discbot-sounds/z/expect.wav')
+  }
 }
 </script>
 

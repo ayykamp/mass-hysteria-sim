@@ -50,14 +50,21 @@ export default {
   methods: {
     addMinion(kb) {
       if (!this.validateInput()) return
-      this.minions = this.minions.concat([this.current])
+      this.$store.commit('addMinion', {
+        friendly: this.friendly,
+        minion: this.current
+      })
       this.current = getDefaultMinion()
+      
       // focus attack text box again after pressing enter. makes for better ux
       if (kb) this.focus()
     },
     delMinion(id) {
-      this.minions.splice(this.minions.findIndex(e => e.$ === id), 1)
-      this.minions = this.minions
+      this.$store.commit('deleteMinion', {
+        friendly: this.friendly,
+        id
+      })
+      this.$forceUpdate()
     },
     validateInput() {
       const current = this.current
@@ -78,7 +85,7 @@ export default {
       }
     },
     reset () {
-      this.minions = []
+      this.$store.commit('reset', this.friendly)
       this.current = getDefaultMinion()
     },
     focus () {
@@ -97,7 +104,10 @@ export default {
         minion.d = e.includes('d')
         minion.p = e.includes('p')
         
-        this.minions = this.minions.concat([minion])
+        this.$store.commit('addMinion', {
+          friendly: this.friendly,
+          minion
+        })
       })
     }
   },
