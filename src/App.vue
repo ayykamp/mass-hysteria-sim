@@ -16,6 +16,7 @@
       >
         <span class="mr-2">GitHub</span>
       </v-btn>
+      <export-board />
     </v-toolbar>
 
     <v-content>
@@ -56,13 +57,15 @@
 import Board from './components/Board'
 const SimulationResults = () => import(/* webpackChunkName: "SimulationResults" */ './components/SimulationResults')
 import BatchEdit from './components/BatchEdit'
+import ExportBoard from './components/ExportBoard'
 
 export default {
   name: 'Mass-Hysteria-Simulator',
   components: {
     Board,
     SimulationResults,
-    BatchEdit
+    BatchEdit,
+    ExportBoard
   },
   data () {
     return {

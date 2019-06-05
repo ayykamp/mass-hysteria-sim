@@ -7,6 +7,7 @@ import Cancel from '../icons/Cancel'
 import 'vuetify/src/stylus/app.styl'
 
 Vue.use(Vuetify, {
+  // hack so that you don't have to include all of the material icons
   icons: {
     'checkboxOn': {
       component: CheckBoxOn,
