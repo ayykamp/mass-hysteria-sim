@@ -5,7 +5,7 @@
         <span class="headline">Batch Edit Minions</span>
       </v-card-title>
       <v-card-text>
-        Input minions space seperated with stats seperated with '/'.
+        Input minions space seperated with stats seperated by '/'.
         Denote Divine Shield and poisonous with d and p respectively.
         <br>E.g.:
         <code>6/7 1/1dp 3/3d</code>
@@ -49,7 +49,7 @@ export default {
   data() {
     return {
       formValid: null,
-      friendlyBoard: '',
+      friendlyBoard: '6/7 1/1dp 3/3d',
       enemyBoard: '',
       friendlyRule: v => (!!v || !!this.enemyMinions) || 'Enter some minions',
       enemyRule: v => (!!v || !!this.friendlyMinions) || 'Enter some minions',
