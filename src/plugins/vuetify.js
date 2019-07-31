@@ -3,6 +3,7 @@ import Vuetify from 'vuetify/lib'
 import CheckBoxOn from '../icons/CheckBoxOn'
 import CheckBoxOff from '../icons/CheckBoxOff'
 import Cancel from '../icons/Cancel'
+import FileCopy from '../icons/FileCopy'
 
 import 'vuetify/src/stylus/app.styl'
 
@@ -25,6 +26,12 @@ Vue.use(Vuetify, {
       component: Cancel, 
       props: {
         name: 'delete'
+      }
+    },
+    'FileCopy': {
+      component: FileCopy, 
+      props: {
+        name: 'fileCopy'
       }
     }
   }

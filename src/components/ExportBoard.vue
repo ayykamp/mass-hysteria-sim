@@ -5,7 +5,13 @@
       <v-card>
         <v-card-title class="headline">Export this Board State</v-card-title>
         <v-card-text>
-          <v-text-field v-model="URL" append-icon="file_copy" @click:append="copyToClipboard"></v-text-field>
+          <v-text-field v-model="URL" ref="urlField">
+            <template slot="append">
+              <v-btn icon @click="copyToClipboard">
+                <file-copy></file-copy>
+              </v-btn>
+            </template>
+          </v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -17,12 +23,17 @@
 </template>
 
 <script>
+import FileCopy from '../icons/FileCopy'
+
 export default {
   data: () => {
     return {
       dialog: false,
       URL: null
     }
+  },
+  components: {
+    FileCopy
   },
   computed: {
     friendlyMinions: {
@@ -41,21 +52,24 @@ export default {
       this.dialog = true
 
       const baseURL = window.location.origin 
-      let url = baseURL
+      let url = baseURL + '/?'
+      let boardQuery = ''
 
-      if (Object.keys(this.friendlyMinions) > 0)
+      if (Object.keys(this.friendlyMinions).length > 0)
         for (let minion of Object.values(this.friendlyMinions))
-          url += `${minion.a}/${minion.h}${minion.d ? 'd': ''}${minion.p ? 'p': ''} `
+          boardQuery += `${minion.a}/${minion.h}${minion.d ? 'd': ''}${minion.p ? 'p': ''} `
       
-      if (Object.keys(this.enemyMinions) > 0)
+      if (Object.keys(this.enemyMinions).length > 0)
         for (let minion of Object.values(this.enemyMinions))
-          url += `${minion.a}/${minion.h}${minion.d ? 'd': ''}${minion.p ? 'p': ''} `
+          boardQuery += `${minion.a}/${minion.h}${minion.d ? 'd': ''}${minion.p ? 'p': ''} `
       
-      this.URL = url
+      this.URL = url + encodeURIComponent(boardQuery)
 
     },
     copyToClipboard () {
-
+      // the actual input element behing the v-text-field
+      this.$refs.urlField.$el.children[0].children[0].children[0].children[0].select()
+      document.execCommand('copy')
     }
   }
 }
