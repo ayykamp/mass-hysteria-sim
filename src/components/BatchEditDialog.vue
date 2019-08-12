@@ -6,10 +6,16 @@
       </v-card-title>
       <v-card-text>
         Input minions space seperated with stats seperated by '/'.
+        <br>
         Denote Divine Shield and poisonous with d and p respectively.
-        <br>E.g.:
+        <br>
+        E.g.:
         <code>6/7 1/1dp 3/3d</code>
-        <br>For Boulderfist Ogre, Stoneskin Basilisk and Silvermoon Guardian
+        <br>
+        For 
+          <a href="https://hearthstone.gamepedia.com/Boulderfist_Ogre" target="_blank">Boulderfist Ogre</a>, 
+          <a href="https://hearthstone.gamepedia.com/Boulderfist_Ogre" target="_blank">Stoneskin Basilisk</a> and 
+          <a href="https://hearthstone.gamepedia.com/Boulderfist_Ogre" target="_blank">Silvermoon Guardian</a>
       </v-card-text>
       <v-card-text>
         <v-container grid-list-md>
@@ -102,7 +108,7 @@ export default {
     },
   },
   mounted () {
-    this.$on('openDialog', () => {
+    this.$on('openBatchEditDialog', () => {
       if (Object.keys(this.friendlyMinions).length > 0)
         this.friendlyBoard = this.minionsToString(this.friendlyMinions)
 

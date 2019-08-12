@@ -7,6 +7,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <batch-edit />
+      <export-board />
       <v-btn
         flat
         target="_blank"
@@ -16,7 +17,6 @@
       >
         <span class="mr-2">GitHub</span>
       </v-btn>
-      <export-board />
     </v-toolbar>
 
     <v-content>
