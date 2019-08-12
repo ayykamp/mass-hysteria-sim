@@ -23,7 +23,7 @@
             <v-flex xs12>
               <v-text-field
                 label="Your Board"
-                v-model="friendlyBoard"
+                v-model="friendlyTextField"
                 :rules="minionRules.concat(friendlyRule)"
                 required
                 @keydown.enter="save()"
@@ -32,7 +32,7 @@
             <v-flex xs12>
               <v-text-field
                 label="Enemy Board"
-                v-model="enemyBoard"
+                v-model="enemyTextField"
                 :rules="minionRules.concat(enemyRule)"
                 required
                 @keydown.enter="save()"
@@ -51,12 +51,15 @@
 </template>
 
 <script>
+import { stringToBoard } from '../util.js'
+import { boardToString } from '../util.js'
+
 export default {
   data() {
     return {
       formValid: null,
-      friendlyBoard: '6/7 1/1dp 3/3d',
-      enemyBoard: '',
+      friendlyTextField: '6/7 1/1dp 3/3d',
+      enemyTextField: '',
       friendlyRule: v => (!!v || !!this.enemyMinions) || 'Enter some minions',
       enemyRule: v => (!!v || !!this.friendlyMinions) || 'Enter some minions',
       minionRules: [
@@ -84,36 +87,32 @@ export default {
         this.$store.commit('reset', true)
         this.$store.commit('reset', false)
         
-        if (this.friendlyBoard) {
-          this.$root.$emit('stringToFriendly', this.friendlyBoard)
+        if (this.friendlyTextField) {
+          const tempBoard = stringToBoard(this.friendlyTextField, true)
+          for (const minion of tempBoard) {
+            this.$store.commit('addMinion', minion)
+          }
         }
 
-        if (this.enemyBoard) {
-          this.$root.$emit('stringToEnemy', this.enemyBoard)          
+        if (this.enemyTextField) {
+          const tempBoard = stringToBoard(this.enemyTextField, false)
+          for (const minion of tempBoard) {
+            this.$store.commit('addMinion', minion)
+          }
         }
 
         this.$refs.form.reset()
         this.$emit('close')
       }
     },
-    minionsToString (minions) {
-      let board = ''
-      
-      for (let minion of Object.values(minions)) {
-        let minionString = `${minion.a}/${minion.h}${minion.d ? 'd': ''}${minion.p ? 'p': ''} `
-        board += minionString
-      }
-
-      return board
-    },
   },
   mounted () {
-    this.$on('openBatchEditDialog', () => {
+    this.$on('open', () => {
       if (Object.keys(this.friendlyMinions).length > 0)
-        this.friendlyBoard = this.minionsToString(this.friendlyMinions)
+        this.friendlyTextField = boardToString(this.friendlyMinions)
 
       if (Object.keys(this.enemyMinions).length > 0)
-        this.enemyBoard = this.minionsToString(this.enemyMinions)
+        this.enemyTextField = boardToString(this.enemyMinions)
     })
   },
 }

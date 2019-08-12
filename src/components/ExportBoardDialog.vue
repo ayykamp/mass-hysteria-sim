@@ -4,7 +4,7 @@
     <v-card-text>
       <v-container grid-list-md>
         <v-layout wrap>
-          <v-flex xs12>
+          <v-flex xs12 v-if="Object.keys(friendlyMinions).length > 0 || Object.keys(enemyMinions).length > 0">
             <v-text-field v-model="URL" ref="urlField" readonly>
               <template slot="append">
                 <v-btn icon @click="copyToClipboard">
@@ -13,12 +13,15 @@
               </template>
             </v-text-field>
           </v-flex>
+          <v-flex xs12 v-else>
+            <span class="title">Please add some minions first!</span>
+          </v-flex>
         </v-layout>
       </v-container>
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn flat @click="dialog = false">Dismiss</v-btn>
+      <v-btn flat @click="$emit('close')">Dismiss</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -48,9 +51,6 @@ export default {
     }
   },
   methods: {
-    openDialog () {
-      this.dialog = true
-    },
     copyToClipboard () {
       // the actual input element behing the v-text-field
       this.$refs.urlField.$el.children[0].children[0].children[0].children[0].select()
@@ -58,20 +58,31 @@ export default {
     }
   },
   mounted () {
-    this.$on('openExportBoardDialog', () => {
+    this.$on('open', () => {
       const baseURL = window.location.origin
       let url = baseURL + '/?'
       let boardQuery = ''
 
-      if (Object.keys(this.friendlyMinions).length > 0)
+      if (Object.keys(this.friendlyMinions).length > 0) {
+        boardQuery += 'f='
+        let tempQuery = ''
         for (let minion of Object.values(this.friendlyMinions))
-          boardQuery += `${minion.a}/${minion.h}${minion.d ? 'd': ''}${minion.p ? 'p': ''} `
-      
-      if (Object.keys(this.enemyMinions).length > 0)
+          tempQuery += `${minion.a}/${minion.h}${minion.d ? 'd': ''}${minion.p ? 'p': ''} `
+        boardQuery += encodeURIComponent(tempQuery)
+      }
+
+      if (Object.keys(this.enemyMinions).length > 0 && Object.keys(this.friendlyMinions).length > 0)
+        boardQuery += '&'
+
+      if (Object.keys(this.enemyMinions).length > 0) {
+        boardQuery += 'e='
+        let tempQuery = ''
         for (let minion of Object.values(this.enemyMinions))
-          boardQuery += `${minion.a}/${minion.h}${minion.d ? 'd': ''}${minion.p ? 'p': ''} `
+          tempQuery += `${minion.a}/${minion.h}${minion.d ? 'd': ''}${minion.p ? 'p': ''} `
+        boardQuery += encodeURIComponent(tempQuery)        
+      }
       
-      this.URL = url + encodeURIComponent(boardQuery)
+      this.URL = url + boardQuery
     })
   },
 }

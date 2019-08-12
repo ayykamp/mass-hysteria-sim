@@ -59,6 +59,8 @@ const SimulationResults = () => import(/* webpackChunkName: "SimulationResults" 
 import BatchEdit from './components/BatchEdit'
 import ExportBoard from './components/ExportBoard'
 
+import { stringToBoard } from './util'
+
 export default {
   name: 'Mass-Hysteria-Simulator',
   components: {
@@ -74,7 +76,7 @@ export default {
     }
   },
   methods: {
-    showSnack(text) {
+    showSnack (text) {
       if (this.snackbar && text === this.snackText) {
         this.shakeItBoi('.v-snack__wrapper')
         return
@@ -87,7 +89,7 @@ export default {
         return
       }
     },
-    shakeItBoi(e) {
+    shakeItBoi (e) {
       let snackbarDiv = document.querySelector(e)
       if (!snackbarDiv.classList.contains('animated')) {
         snackbarDiv.classList.add('animated')
@@ -96,9 +98,38 @@ export default {
         }, 650)
       }
     },
+    parseQuery (query) {
+      let queryObject = {}
+      
+      query = query.split('&')
+      for (let parameter of query) {
+        let temp = decodeURIComponent(parameter).split('=')
+        queryObject[temp[0]] = temp[1]
+      }
+      return queryObject
+    }
   },
   created () {
-    console.log('https://storage.googleapis.com/discbot-sounds/z/expect.wav')
+    // console.log('https://storage.googleapis.com/discbot-sounds/z/expect.wav')
+
+    if (document.location.search !== '') {
+      let query = document.location.search.slice(1)
+      query = this.parseQuery(query)
+
+      if (query.f) {
+        const tempBoard = stringToBoard(query.f, true)
+        for (const minion of tempBoard) {
+          this.$store.commit('addMinion', minion)
+        }
+      }
+
+      if (query.e) {
+        const tempBoard = stringToBoard(query.e, false)
+        for (const minion of tempBoard) {
+          this.$store.commit('addMinion', minion)
+        }
+      }
+    }
   }
 }
 </script>
