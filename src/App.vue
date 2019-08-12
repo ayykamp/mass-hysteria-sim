@@ -2,8 +2,14 @@
   <v-app>
     <v-toolbar app>
       <v-toolbar-title class="headline text-uppercase">
-        <span>Mass Hysteria</span>
-        <span class="font-weight-light">Simulator</span>
+        <div id="desktop-title">
+          <span>Mass Hysteria</span>
+          <span class="font-weight-light">Simulator</span>
+        </div>
+        <div id="mobile-title">
+          <span>MASS HYSTERIA</span>
+          <span class="font-weight-light">SIM</span>
+        </div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <batch-edit />
@@ -13,7 +19,7 @@
         target="_blank"
         href="https://github.com/AyyKamp/mass-hysteria-sim"
         rel="noreferrer"
-        id="github-link"
+        class="hidden-md-and-down"
       >
         <span class="mr-2">GitHub</span>
       </v-btn>
@@ -22,10 +28,10 @@
     <v-content>
       <v-container fluid grid-list-xl>
         <v-layout wrap align-center>
-          <v-flex lg6 sm12 xs12>
+          <v-flex md6 sm12 xs12>
             <board :friendly="true" @error="showSnack"/>
           </v-flex>
-          <v-flex lg6 sm12 xs12>
+          <v-flex md6 sm12 xs12>
             <board :friendly="false" @error="showSnack"/>
           </v-flex>
           <v-flex xs12>
@@ -151,8 +157,21 @@ export default {
   background-color: #424242;
 }
 
+#mobile-title {
+  display: none;
+}
+
 @media only screen and (max-width: 440px) {
   #github-link {
+    display: none;
+  }
+  #mobile-title {
+    display: initial;
+  }
+  #desktop-title {
+    display: none;
+  }
+  .shrink-btn {
     display: none;
   }
 }
