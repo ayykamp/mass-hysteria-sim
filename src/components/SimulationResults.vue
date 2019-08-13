@@ -3,12 +3,19 @@
     <v-text-field v-model="numberOfRuns" label="Number of Runs" type="number" :rules="runRules"></v-text-field>
     <v-btn color="error" @click="simulate" :loading="simLoading" class="simulate-btn">ＳＩＭＵＬＡＴＥ</v-btn>
     <div v-if="results.length > 0">
-      <h2 id="clear-chance" class="important-results">
-        Chance to clear the enemy Board: {{ Number((clearChance) * 100).toFixed(2) + '%' }}
-      </h2>
-      <h2 id="remaining-damage" class="important-results">
-        Average remaining Damage: {{ Number(remainingDamage.toFixed(2)) }}
-      </h2>
+      <v-layout wrap align-center class="important-results">
+        <v-flex lg6 sm12 xs12>
+          <h2>
+            Chance to clear the enemy Board: {{ Number((enemyClearChance) * 100).toFixed(2) + '%' }}
+          </h2>
+        </v-flex>
+        <v-flex lg6 sm12 xs12>
+          <h2>
+            Average remaining Attack on the enemy side: {{ Number(remainingDamage.toFixed(2)) }}
+          </h2>
+        </v-flex>
+      </v-layout>
+      
       <v-data-table
         :headers="headers"
         :items="results"
@@ -39,7 +46,9 @@ export default {
   data() {
     return {
       results: [],
-      clearChance: null,
+      allClearChance: null,
+      friendlyClearChance: null,
+      enemyClearChance: null,      
       remainingDamage: null,
       numberOfRuns: 10000,
       simLoading: false,
@@ -89,6 +98,8 @@ export default {
       const minions = friendlyMinions.concat(enemyMinions).map(e => parseInt(e))
       try {
         const result = await this.callWorker(minions, runs)
+        
+        // Improve this
         this.clearChance = result.clearChance
         this.remainingDamage = result.remainingDamage
         this.results = result.attack.map((e, i) => {
@@ -101,6 +112,7 @@ export default {
             poisonous: result.poisonous[i]
           }
         })
+        
       } catch (e) {
         this.$emit('error', e.message)
       }
@@ -158,13 +170,8 @@ export default {
 </script>
 
 <style>
-  #clear-chance {
-    padding: 15px 15px 0px 15px;
-  }
-  #remaining-damage {
-    padding: 15px;
-  }
   .important-results {
-    font-size: 1.2em;
+    padding-top: 20px;
+    font-size: 0.8em;
   }
 </style>

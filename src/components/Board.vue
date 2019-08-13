@@ -91,37 +91,7 @@ export default {
     focus () {
       this.$nextTick(this.$refs.attackTextField.focus)
     },
-    stringToBoard (string) {
-      let board = string.split(' ')
-      const statsRegex = /[0-9]+\/[0-9]+/gm
-      board.forEach((e, i) => {
-        if (!e) return
-        let minion = getDefaultMinion()
-        let stats = e.match(statsRegex)[0].split('/')
-        minion.a = stats[0]
-        minion.h = stats[1]
-
-        minion.d = e.includes('d')
-        minion.p = e.includes('p')
-        
-        this.$store.commit('addMinion', {
-          friendly: this.friendly,
-          minion
-        })
-      })
-    }
   },
-  mounted () {
-    if (this.friendly) {
-      this.$root.$on('stringToFriendly', string => {
-        this.stringToBoard(string)
-      })
-    } else {
-      this.$root.$on('stringToEnemy', string => {
-        this.stringToBoard(string)        
-      })
-    }
-  }
 }
 </script>
 

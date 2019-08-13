@@ -2,17 +2,28 @@
   <v-app>
     <v-toolbar app>
       <v-toolbar-title class="headline text-uppercase">
-        <span>Mass Hysteria</span>
-        <span class="font-weight-light">Simulator</span>
+        <div class="hidden-xs-only">
+          <span>Mass Hysteria</span>
+          <span class="font-weight-light">Simulator</span>
+        </div>
+        <div id="mobile-title" class="hidden-sm-and-up">
+          <span>MASS HYSTERIA</span>
+          <span class="font-weight-light">SIM</span>
+        </div>
+        <div id="smol-title">
+          <span>MH</span>
+          <span class="font-weight-light">S</span>
+        </div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <batch-edit />
+      <export-board />
       <v-btn
         flat
         target="_blank"
         href="https://github.com/AyyKamp/mass-hysteria-sim"
         rel="noreferrer"
-        id="github-link"
+        class="hidden-md-and-down"
       >
         <span class="mr-2">GitHub</span>
       </v-btn>
@@ -21,10 +32,10 @@
     <v-content>
       <v-container fluid grid-list-xl>
         <v-layout wrap align-center>
-          <v-flex lg6 sm12 xs12>
+          <v-flex md6 sm12 xs12>
             <board :friendly="true" @error="showSnack"/>
           </v-flex>
-          <v-flex lg6 sm12 xs12>
+          <v-flex md6 sm12 xs12>
             <board :friendly="false" @error="showSnack"/>
           </v-flex>
           <v-flex xs12>
@@ -56,13 +67,17 @@
 import Board from './components/Board'
 const SimulationResults = () => import(/* webpackChunkName: "SimulationResults" */ './components/SimulationResults')
 import BatchEdit from './components/BatchEdit'
+import ExportBoard from './components/ExportBoard'
+
+import { stringToBoard } from './util'
 
 export default {
   name: 'Mass-Hysteria-Simulator',
   components: {
     Board,
     SimulationResults,
-    BatchEdit
+    BatchEdit,
+    ExportBoard
   },
   data () {
     return {
@@ -71,7 +86,7 @@ export default {
     }
   },
   methods: {
-    showSnack(text) {
+    showSnack (text) {
       if (this.snackbar && text === this.snackText) {
         this.shakeItBoi('.v-snack__wrapper')
         return
@@ -84,7 +99,7 @@ export default {
         return
       }
     },
-    shakeItBoi(e) {
+    shakeItBoi (e) {
       let snackbarDiv = document.querySelector(e)
       if (!snackbarDiv.classList.contains('animated')) {
         snackbarDiv.classList.add('animated')
@@ -93,9 +108,38 @@ export default {
         }, 650)
       }
     },
+    parseQuery (query) {
+      let queryObject = {}
+      
+      query = query.split('&')
+      for (let parameter of query) {
+        let temp = decodeURIComponent(parameter).split('=')
+        queryObject[temp[0]] = temp[1]
+      }
+      return queryObject
+    }
   },
   created () {
-    console.log('https://storage.googleapis.com/discbot-sounds/z/expect.wav')
+    // console.log('https://storage.googleapis.com/discbot-sounds/z/expect.wav')
+
+    if (document.location.search !== '') {
+      let query = document.location.search.slice(1)
+      query = this.parseQuery(query)
+
+      if (query.f) {
+        const tempBoard = stringToBoard(query.f, true)
+        for (const minion of tempBoard) {
+          this.$store.commit('addMinion', minion)
+        }
+      }
+
+      if (query.e) {
+        const tempBoard = stringToBoard(query.e, false)
+        for (const minion of tempBoard) {
+          this.$store.commit('addMinion', minion)
+        }
+      }
+    }
   }
 }
 </script>
@@ -117,9 +161,16 @@ export default {
   background-color: #424242;
 }
 
-@media only screen and (max-width: 440px) {
-  #github-link {
+#smol-title {
+  display: none;
+}
+
+@media only screen and (max-width: 350px) {
+  #mobile-title {
     display: none;
+  }
+  #smol-title {
+    display: initial;
   }
 }
 
