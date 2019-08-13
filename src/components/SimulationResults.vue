@@ -6,22 +6,7 @@
       <v-layout wrap align-center class="important-results">
         <v-flex lg6 sm12 xs12>
           <h2>
-            Chance to clear your Board: {{ Number((friendlyClearChance) * 100).toFixed(2) + '%' }}
-          </h2>
-        </v-flex>
-        <v-flex lg6 sm12 xs12>
-          <h2>
             Chance to clear the enemy Board: {{ Number((enemyClearChance) * 100).toFixed(2) + '%' }}
-          </h2>
-        </v-flex>
-        <v-flex lg6 sm12 xs12>
-          <h2>
-            Chance to clear the entire Board: {{ Number((allClearChance) * 100).toFixed(2) + '%' }}
-          </h2>
-        </v-flex>
-        <v-flex lg6 sm12 xs12>
-          <h2>
-            Average remaining Attack on your side: {{ Number(remainingDamage.toFixed(2)) }}
           </h2>
         </v-flex>
         <v-flex lg6 sm12 xs12>
@@ -115,10 +100,7 @@ export default {
         const result = await this.callWorker(minions, runs)
         
         // Improve this
-        this.enemyClearChance = result.enemyClearChance
-        // this.enemyRemainingDamage = result.enemyRemainingDamage
-        this.friendlyClearChance = result.friendlyClearChance
-        // this.friendlyRemainingDamage = result.friendlyRemainingDamage
+        this.clearChance = result.clearChance
         this.remainingDamage = result.remainingDamage
         this.results = result.attack.map((e, i) => {
           return {

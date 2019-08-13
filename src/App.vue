@@ -2,13 +2,17 @@
   <v-app>
     <v-toolbar app>
       <v-toolbar-title class="headline text-uppercase">
-        <div id="desktop-title">
+        <div class="hidden-xs-only">
           <span>Mass Hysteria</span>
           <span class="font-weight-light">Simulator</span>
         </div>
-        <div id="mobile-title">
+        <div id="mobile-title" class="hidden-sm-and-up">
           <span>MASS HYSTERIA</span>
           <span class="font-weight-light">SIM</span>
+        </div>
+        <div id="smol-title">
+          <span>MH</span>
+          <span class="font-weight-light">S</span>
         </div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
@@ -157,22 +161,16 @@ export default {
   background-color: #424242;
 }
 
-#mobile-title {
+#smol-title {
   display: none;
 }
 
-@media only screen and (max-width: 440px) {
-  #github-link {
-    display: none;
-  }
+@media only screen and (max-width: 350px) {
   #mobile-title {
+    display: none;
+  }
+  #smol-title {
     display: initial;
-  }
-  #desktop-title {
-    display: none;
-  }
-  .shrink-btn {
-    display: none;
   }
 }
 

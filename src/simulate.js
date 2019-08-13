@@ -68,8 +68,7 @@ const attack = (self, victim) => {
 
 // resolve an attack for one minion, taking into consideration divine shield and poisonous
 const resolveMinion = (self, victim) => {
-  // if minion has divine shield and attacker has at least 1 attack, 
-  // take no damage and remove divine shield
+  // if minion has divine shield, take no damage and remove divine shield
   if (self[3] === 1 && victim[0] >= 1) {
     self[3] = 0
   }
@@ -144,9 +143,7 @@ const testMassHysteria = (stats, trials) => {
     const survival = new Array(n).fill(0)
     // Create 3D array to house the trials
     let simStats = arr3D(0, n, 5, trials)
-    
-    let cleared = new Array(3).fill(new Array(trials).fill(1))
-    
+    let cleared = new Array(trials).fill(1)
     // for each trial
     for (let trial = 0; trial < trials; trial++) {
       // do the trial and put it in the array
@@ -164,12 +161,9 @@ const testMassHysteria = (stats, trials) => {
       for (let i = 0; i < simStats.length; i++) {
         survival[i] = survival[i] + (simStats[i][1][trial] > 0 ? 1 / trials : 0)
         // see whether or not the trial resulted in a full clear of enemy board
-        /* if (simStats[i][2][trial] === 0 && simStats[i][1][trial] > 0.05)
-          cleared[0][trial] = 0
-        if (simStats[i][2][trial] === 1 && simStats[i][1][trial] > 0.05)
-          cleared[1][trial] = 0 */
-        if (simStats[i][1][trial] > 0.05)
-          cleared[2][trial] = 0
+        if (simStats[i][1][trial] * simStats[i][2][trial] > 0.05) {
+          cleared[trial] = 0
+        }
       }
     }
     const healthAfter = []
@@ -180,10 +174,7 @@ const testMassHysteria = (stats, trials) => {
       }
       healthAfter.push(healthSum / trials)
     }
-
-    const friendlyClearChance = cleared[0].reduce((curr, next) => curr + next) / cleared[0].length
-    const enemyClearChance = cleared[1].reduce((curr, next) => curr + next) / cleared[1].length
-    const allClearChance = cleared[2].reduce((curr, next) => curr + next) / cleared[2].length
+    const clearChance = cleared.reduce((curr, next) => curr + next) / cleared.length
 
     let remainingDamage = 0
     for (let i = 0; i < attack.length; i++) {
@@ -205,9 +196,7 @@ const testMassHysteria = (stats, trials) => {
       healthAfter,
       survival,
       isEnemy,
-      friendlyClearChance,
-      enemyClearChance,
-      allClearChance,
+      clearChance,
       remainingDamage,
       divineShield,
       poisonous

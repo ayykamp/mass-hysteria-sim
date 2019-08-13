@@ -58,7 +58,7 @@ export default {
   data() {
     return {
       formValid: null,
-      friendlyTextField: '6/7 1/1dp 3/3d',
+      friendlyTextField: '',
       enemyTextField: '',
       friendlyRule: v => (!!v || !!this.enemyMinions) || 'Enter some minions',
       enemyRule: v => (!!v || !!this.friendlyMinions) || 'Enter some minions',
