@@ -39,7 +39,7 @@
             <board :friendly="false" @error="showSnack"/>
           </v-flex>
           <v-flex xs12>
-            <simulation-results @error="showSnack"/>
+            <simulation-results @error="showSnack" ref="simResults"/>
           </v-flex>
         </v-layout>
       </v-container>
@@ -140,7 +140,7 @@ export default {
         }
       }
     }
-  }
+  },
 }
 </script>
 

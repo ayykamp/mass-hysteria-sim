@@ -1,3 +1,12 @@
+/***
+ * Stats:
+ * 0: Attack
+ * 1: Health
+ * 2: Enemy (0 = Friendly, 1 = Enemy)
+ * 3: Divine Shield
+ * 4: Poisonous
+*/
+
 const shuffle = array => {
   let currentIndex = array.length, temporaryValue, randomIndex
 
@@ -68,7 +77,8 @@ const attack = (self, victim) => {
 
 // resolve an attack for one minion, taking into consideration divine shield and poisonous
 const resolveMinion = (self, victim) => {
-  // if minion has divine shield, take no damage and remove divine shield
+  // if minion has divine shield and attacker has at least 1 attack, 
+  // take no damage and remove divine shield
   if (self[3] === 1 && victim[0] >= 1) {
     self[3] = 0
   }
@@ -78,7 +88,7 @@ const resolveMinion = (self, victim) => {
   }
   // if none of the previous apply, take normal damage
   else {
-    self[1] = self[1] - victim[0]
+    self[1] -= victim[0]
   }
 }
 
@@ -131,7 +141,7 @@ const testMassHysteria = (stats, trials) => {
     const healthBefore = []
     const isEnemy = []
     const divineShield = []
-    const poisonous = []  
+    const poisonous = []
     for (let i = 0; i < statsMat.length; i++) {
       attack.push(statsMat[i][0])
       healthBefore.push(statsMat[i][1])
@@ -143,7 +153,12 @@ const testMassHysteria = (stats, trials) => {
     const survival = new Array(n).fill(0)
     // Create 3D array to house the trials
     let simStats = arr3D(0, n, 5, trials)
-    let cleared = new Array(trials).fill(1)
+    
+    let cleared = new Array(3)
+    cleared[0] = new Array(trials).fill(1)
+    cleared[1] = new Array(trials).fill(1)
+    cleared[2] = new Array(trials).fill(1)
+    
     // for each trial
     for (let trial = 0; trial < trials; trial++) {
       // do the trial and put it in the array
@@ -156,13 +171,36 @@ const testMassHysteria = (stats, trials) => {
           simStats[i][j][trial] = trialResult[i][j]
         }
       }
-
-      // Get each minion's chance of survival and the chance of clearing the enemy's board
-      for (let i = 0; i < simStats.length; i++) {
+      
+      //old
+      /* for (let i = 0; i < simStats.length; i++) {
         survival[i] = survival[i] + (simStats[i][1][trial] > 0 ? 1 / trials : 0)
         // see whether or not the trial resulted in a full clear of enemy board
         if (simStats[i][1][trial] * simStats[i][2][trial] > 0.05) {
           cleared[trial] = 0
+        }
+      } */
+      //new
+      // Get each minion's chance of survival and the chance of clearing the enemy's board
+      for (let i = 0; i < simStats.length; i++) {
+        survival[i] = survival[i] + (simStats[i][1][trial] > 0 ? 1 / trials : 0)
+        // see whether or not the trial resulted in a full clear of enemy board
+        
+        /* if (simStats[i][2][trial] === 0 && simStats[i][1][trial] > 0.05)
+          cleared[0][trial] = 0
+        if (simStats[i][2][trial] === 1 && simStats[i][1][trial] > 0.05)
+          cleared[1][trial] = 0
+        if (simStats[i][1][trial] > 0.05)
+          cleared[2][trial] = 0 */
+
+        if (simStats[i][1][trial] > 0 && simStats[i][2][trial] === 0) {
+          cleared[0][trial] = 0
+        }
+        if (simStats[i][1][trial] > 0 && simStats[i][2][trial] === 1) {
+          cleared[1][trial] = 0
+        }
+        if (cleared[0][trial] === 0 || cleared[1][trial] === 0) {
+          cleared[2][trial] = 0
         }
       }
     }
@@ -174,11 +212,15 @@ const testMassHysteria = (stats, trials) => {
       }
       healthAfter.push(healthSum / trials)
     }
-    const clearChance = cleared.reduce((curr, next) => curr + next) / cleared.length
 
-    let remainingDamage = 0
-    for (let i = 0; i < attack.length; i++) {
-      remainingDamage += attack[i] * survival[i] * isEnemy[i]
+    const clearChance = new Array(3)
+    for (let i = 0; i < clearChance.length; i++) {
+      clearChance[i] = cleared[i].reduce((curr, next) => curr + next) / cleared[i].length
+    }
+
+    const remainingDamage = new Array(2).fill(0)
+    for (let i in attack) {
+      remainingDamage[isEnemy[i]] += attack[i] * survival[i]
     }
 
     // Printing it out and formatting numbers.
