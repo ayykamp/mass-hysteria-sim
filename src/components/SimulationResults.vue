@@ -4,36 +4,6 @@
     <v-btn color="error" @click="simulate" :loading="simLoading" class="simulate-btn">ＳＩＭＵＬＡＴＥ</v-btn>
     <div v-if="results.length > 0">
       <v-layout wrap align-center class="important-results">
-        <!-- <v-flex lg6 sm12 xs12>
-          <h2>
-            Chance to clear your Board: {{ Number((friendlyClearChance) * 100).toFixed(2) + '%' }}
-          </h2>
-        </v-flex>
-        <v-flex lg6 sm12 xs12>
-          <h2>
-            Chance to clear the enemy Board: {{ Number((enemyClearChance) * 100).toFixed(2) + '%' }}
-          </h2>
-        </v-flex>
-        <v-flex lg6 sm12 xs12>
-          <h2>
-            Chance to clear the entire Board: {{ Number((allClearChance) * 100).toFixed(2) + '%' }}
-          </h2>
-        </v-flex>
-        <v-flex lg6 sm12 xs12>
-          <h2>
-            Average remaining Attack on your side: {{ Number(friendlyRemainingDamage.toFixed(2)) }}
-          </h2>
-        </v-flex>
-        <v-flex lg6 sm12 xs12>
-          <h2>
-            Average remaining Attack on the enemy side: {{ Number(enemyRemainingDamage.toFixed(2)) }}
-          </h2>
-        </v-flex> -->
-      </v-layout>
-      
-      <h2>
-        Minion Shit
-      </h2>
       <v-data-table
         :headers="minionTableheaders"
         :items="results"
@@ -54,9 +24,6 @@
           </tr>
         </template>
       </v-data-table>
-      <h2>
-        Board Shit
-      </h2>
       <v-data-table
         :headers="boardTableHeaders"
         :items="boardStatistics"
